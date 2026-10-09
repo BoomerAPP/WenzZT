@@ -1,7 +1,7 @@
 {
-  "name": "WenzZTools V1.0",
+  "name": "WenzZTools - 30+ Tools",
   "short_name": "WenzZTools",
-  "description": "Kumpulan tools : downloader, maker, AI chat, dan lainnya",
+  "description": "Kumpulan 30+ tools: downloader, maker, AI chat, dan lainnya",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
@@ -9,27 +9,32 @@
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
   "lang": "id",
-  "categories": ["utilities", "productivity"],
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "entertainment"],
   "icons": [
     {
       "src": "icon-48.png",
       "sizes": "48x48",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-72.png",
       "sizes": "72x72",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-96.png",
       "sizes": "96x96",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-144.png",
       "sizes": "144x144",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-192.png",
@@ -42,6 +47,36 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Semua Tools",
+      "short_name": "Tools",
+      "description": "Lihat 30 tools gratis",
+      "url": "/tools.html",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "AI Chat",
+      "short_name": "AI",
+      "description": "Chat dengan WenzZ AI",
+      "url": "/ai.html",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Meme Generator",
+      "short_name": "Meme",
+      "description": "Bikin meme cepat",
+      "url": "/tools/meme.html",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "TikTok Downloader",
+      "short_name": "TikTok",
+      "description": "Download TikTok no WM",
+      "url": "/tools/tiktok.html",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
     }
   ]
 }
