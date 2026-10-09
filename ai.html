@@ -112,7 +112,7 @@
 // ==========================================
 // ⚙️ GANTI 1 BARIS DI BAWAH INI SAJA
 // ==========================================
-const OPENROUTER_KEY = 'PASTE_KEY_DISINI';
+// API key di server — aman
 // ==========================================
 
 // Model gratis OpenRouter
@@ -123,7 +123,7 @@ const OPENROUTER_KEY = 'PASTE_KEY_DISINI';
 // 'qwen/qwen-2.5-7b-instruct:free'
 const MODEL = 'openrouter/free';
 
-const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const API_URL = '/api/chat';
 
 let messages = [];
 let isTyping = false;
@@ -180,9 +180,9 @@ async function sendMessage() {
   if (!text || isTyping) return;
 
   if (!OPENROUTER_KEY || OPENROUTER_KEY === 'PASTE_KEY_OPENROUTER_DISINI') {
-    showToast('⚠️ OpenRouter key belum di-set!');
-    return;
-  }
+  showToast('⚠️ OpenRouter key belum di-set!');
+  return;
+}
 
   isTyping = true;
   input.value = '';
@@ -198,14 +198,15 @@ async function sendMessage() {
   bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
 
   try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + OPENROUTER_KEY,
-        'HTTP-Referer': 'https://wenzztools.vercel.app',
-        'X-Title': 'WenzZTools'
-      },
+    const response = await fetch('/api/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    ...
+  })
+});
       body: JSON.stringify({
         model: MODEL,
         messages: [
