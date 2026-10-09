@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Instagram Downloader - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 480px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.input-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.input-box label {
+  display: block; font-size: 11px; color: var(--text-secondary);
+  margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.input-box input {
+  width: 100%; padding: 12px 14px; background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text-primary); font-size: 13px; outline: none;
+  transition: var(--transition);
+}
+.input-box input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+.btn-main {
+  width: 100%; padding: 14px; background: var(--accent);
+  color: var(--bg-primary); border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: var(--transition); margin-top: 12px;
+}
+.btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-main:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+
+.loading { display: none; text-align: center; padding: 24px; color: var(--text-secondary); font-size: 13px; }
+.loading.show { display: block; }
+.spinner {
+  width: 32px; height: 32px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  margin: 0 auto 12px; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-box {
+  display: none; background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444;
+  border-radius: 12px; padding: 14px; font-size: 13px;
+  margin-top: 16px; text-align: center;
+}
+.error-box.show { display: block; }
+
+.result-box {
+  display: none; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; margin-top: 16px;
+}
+.result-box.show { display: block; }
+
+.media-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 8px; margin-bottom: 14px;
+}
+.media-item {
+  position: relative; aspect-ratio: 1; border-radius: 10px;
+  overflow: hidden; background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+.media-item img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.media-badge {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0, 0, 0, 0.7); color: white;
+  padding: 2px 6px; border-radius: 6px; font-size: 9px;
+  font-weight: 600;
+}
+.media-download {
+  position: absolute; bottom: 6px; right: 6px;
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; color: var(--bg-primary);
+  text-decoration: none; font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.info-row {
+  margin-bottom: 10px; font-size: 13px; color: var(--text-primary); line-height: 1.4;
+}
+.info-row strong {
+  color: var(--text-secondary); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  display: block; margin-bottom: 2px;
+}
+
+.action-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-top: 12px;
+}
+.dl-btn {
+  padding: 12px; background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text-primary); font-size: 12px; font-weight: 600;
+  cursor: pointer; text-align: center; text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; transition: var(--transition);
+}
+.dl-btn:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.dl-btn.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../index.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Instagram Downloader</h1>
+      <p class="tool-sub">Foto, Video, Reels, IGTV</p>
+    </div>
+  </div>
+
+  <div class="input-box">
+    <label for="igUrl">Link Instagram</label>
+    <input type="text" id="igUrl" placeholder="https://www.instagram.com/p/...">
+    <button class="btn-main" id="igBtn" onclick="downloadIG()">⬇️ Download</button>
+  </div>
+
+  <div class="loading" id="igLoading">
+    <div class="spinner"></div>
+    Mengambil data... tunggu sebentar
+  </div>
+
+  <div class="error-box" id="igError"></div>
+
+  <div class="result-box" id="igResult">
+    <div id="igMedia"></div>
+    <div class="info-row">
+      <strong>Author</strong>
+      <span id="igAuthor">-</span>
+    </div>
+    <div class="info-row">
+      <strong>Caption</strong>
+      <span id="igCaption">-</span>
+    </div>
+    <div class="action-row" id="igActions"></div>
+  </div>
+
+</div>
+
+<script>
+async function downloadIG() {
+  const url = document.getElementById('igUrl').value.trim();
+  if (!url) {
+    alert('Masukkan link Instagram dulu!');
+    return;
+  }
+
+  if (!url.includes('instagram.com')) {
+    alert('Link harus dari instagram.com');
+    return;
+  }
+
+  const btn = document.getElementById('igBtn');
+  const loading = document.getElementById('igLoading');
+  const errorBox = document.getElementById('igError');
+  const resultBox = document.getElementById('igResult');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Memproses...';
+  loading.classList.add('show');
+  errorBox.classList.remove('show');
+  resultBox.classList.remove('show');
+
+  try {
+    // API 1: snapinsta / cobalt alternative
+    // Pakai cobalt.tools API (gratis, reliable)
+    const apiUrl = 'https://api.cobalt.tools/api/json';
+    
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        url: url,
+        vQuality: '720',
+        isAudioOnly: false
+      })
+    });
+
+    if (!res.ok) throw new Error('API error: ' + res.status);
+
+    const data = await res.json();
+    
+    if (!data.url && !data.picker) {
+      throw new Error('Gagal ambil data. Cek link atau coba lagi.');
+    }
+
+    renderIGResult(data, url);
+    resultBox.classList.add('show');
+  } catch (err) {
+    // Fallback: pakai API lain
+    try {
+      await downloadIGFallback(url);
+    } catch (err2) {
+      errorBox.textContent = '❌ ' + err2.message;
+      errorBox.classList.add('show');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇️ Download';
+    loading.classList.remove('show');
+  }
+}
+
+async function downloadIGFallback(url) {
+  // Fallback API: instasave / snapsave
+  const apiUrl = 'https://api.instasave.io/api/instagram?url=' + encodeURIComponent(url);
+  
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Gagal ambil data. Coba lagi nanti.');
+  
+  const data = await res.json();
+  if (!data || (!data.url && !data.media)) {
+    throw new Error('Data tidak ditemukan. Cek link ya.');
+  }
+  
+  renderIGResult(data, url);
+  document.getElementById('igResult').classList.add('show');
+}
+
+function renderIGResult(data, originalUrl) {
+  const mediaContainer = document.getElementById('igMedia');
+  const actionsContainer = document.getElementById('igActions');
+  const authorEl = document.getElementById('igAuthor');
+  const captionEl = document.getElementById('igCaption');
+
+  mediaContainer.innerHTML = '';
+  actionsContainer.innerHTML = '';
+
+  // Cobalt.tools response
+  if (data.url) {
+    const isVideo = data.url.includes('.mp4') || data.url.includes('video');
+    
+    mediaContainer.innerHTML = `
+      <div class="media-item" style="aspect-ratio: 9/16; max-height: 400px;">
+        ${isVideo 
+          ? `<video src="${data.url}" controls style="width:100%;height:100%;object-fit:cover;" poster=""></video>`
+          : `<img src="${data.url}" alt="media">`
+        }
+        <span class="media-badge">${isVideo ? '🎬 VIDEO' : '📷 PHOTO'}</span>
+      </div>
+    `;
+
+    actionsContainer.innerHTML = `
+      <a class="dl-btn primary" href="${data.url}" target="_blank" download rel="noopener">⬇️ Download Media</a>
+      <a class="dl-btn" href="${data.url}" target="_blank" rel="noopener">🔗 Buka di Tab Baru</a>
+    `;
+
+    authorEl.textContent = data.author || 'Instagram User';
+    captionEl.textContent = data.title || data.filename || 'Instagram media';
+  }
+
+  // Picker (multi-media)
+  if (data.picker && Array.isArray(data.picker)) {
+    data.picker.forEach((item, i) => {
+      const mediaUrl = item.url;
+      const isVideo = item.type === 'video' || mediaUrl.includes('.mp4');
+      
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `
+        ${isVideo 
+          ? `<video src="${mediaUrl}" muted style="width:100%;height:100%;object-fit:cover;"></video>`
+          : `<img src="${mediaUrl}" alt="media ${i+1}">`
+        }
+        <span class="media-badge">${isVideo ? '🎬' : '📷'}</span>
+        <a class="media-download" href="${mediaUrl}" target="_blank" download rel="noopener">⬇</a>
+      `;
+      mediaContainer.appendChild(div);
+    });
+
+    actionsContainer.innerHTML = `
+      <button class="dl-btn primary" onclick="downloadAllIG()">⬇️ Download Semua</button>
+      <a class="dl-btn" href="${originalUrl}" target="_blank" rel="noopener">🔗 Buka Post</a>
+    `;
+
+    authorEl.textContent = data.author || 'Instagram User';
+    captionEl.textContent = data.title || (data.picker.length + ' media');
+  }
+
+  // Fallback API response
+  if (data.media && Array.isArray(data.media)) {
+    data.media.forEach((item, i) => {
+      const mediaUrl = item.url || item.src;
+      const isVideo = item.type === 'video' || mediaUrl.includes('.mp4');
+      
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `
+        ${isVideo 
+          ? `<video src="${mediaUrl}" muted style="width:100%;height:100%;object-fit:cover;"></video>`
+          : `<img src="${mediaUrl}" alt="media ${i+1}">`
+        }
+        <span class="media-badge">${isVideo ? '🎬' : '📷'}</span>
+        <a class="media-download" href="${mediaUrl}" target="_blank" download rel="noopener">⬇</a>
+      `;
+      mediaContainer.appendChild(div);
+    });
+
+    actionsContainer.innerHTML = `
+      <a class="dl-btn primary" href="${data.media[0].url || data.media[0].src}" target="_blank" download rel="noopener">⬇️ Download Utama</a>
+      <a class="dl-btn" href="${originalUrl}" target="_blank" rel="noopener">🔗 Buka Post</a>
+    `;
+
+    authorEl.textContent = data.author || 'Instagram User';
+    captionEl.textContent = data.caption || (data.media.length + ' media');
+  }
+}
+
+function downloadAllIG() {
+  const links = document.querySelectorAll('#igMedia .media-download');
+  if (links.length === 0) {
+    alert('Nggak ada media buat di-download');
+    return;
+  }
+  
+  links.forEach((link, i) => {
+    setTimeout(() => {
+      link.click();
+    }, i * 500);
+  });
+  
+  alert('Mendownload ' + links.length + ' file...');
+}
+
+// Enter = download
+document.getElementById('igUrl').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') downloadIG();
+});
+</script>
+<div class="wenzz-credit">© 2026 WenzZTools • by <span>@WenzZ</span></div>
+<script>
+  // Auto-sync tema dari homepage
+  (function() {
+    const saved = localStorage.getItem('wenzz-theme');
+    if (saved) {
+      document.body.classList.add(saved);
+    }
+  })();
+</script>
+</body>
+</html>

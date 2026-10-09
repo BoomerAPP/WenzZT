@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Base64 Converter - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 120px;
+}
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.tab-bar {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.tab-btn.active {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+.b64-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.b64-box label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.b64-box textarea {
+  width: 100%;
+  min-height: 120px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  outline: none;
+  resize: vertical;
+  transition: var(--transition);
+}
+.b64-box textarea:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.b64-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+.b64-btn {
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.b64-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+.b64-btn.primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border-color: var(--accent);
+}
+
+.stat-info {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../index.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Base64 Converter</h1>
+      <p class="tool-sub">Encode & Decode Base64</p>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('encode', this)">🔒 Encode</button>
+    <button class="tab-btn" onclick="switchTab('decode', this)">🔓 Decode</button>
+  </div>
+
+  <div class="b64-box">
+    <label id="inputLabel">Input (Plain Text)</label>
+    <textarea id="b64Input" placeholder="Masukkan teks atau base64 di sini..."></textarea>
+    <div class="stat-info" id="inputInfo">0 karakter</div>
+  </div>
+
+  <div class="b64-actions">
+    <button class="b64-btn primary" onclick="convertB64()" id="convertBtn">🔒 Encode</button>
+    <button class="b64-btn" onclick="swapB64()">🔄 Swap</button>
+    <button class="b64-btn" onclick="clearB64()">🗑️ Clear</button>
+    <button class="b64-btn" onclick="copyB64()">📋 Copy Result</button>
+  </div>
+
+  <div class="b64-box" style="margin-top: 16px;">
+    <label>Hasil</label>
+    <textarea id="b64Output" readonly placeholder="Hasil akan muncul di sini..."></textarea>
+    <div class="stat-info" id="outputInfo">0 karakter</div>
+  </div>
+
+</div>
+
+<script>
+let mode = 'encode';
+
+function switchTab(m, btn) {
+  mode = m;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if (mode === 'encode') {
+    document.getElementById('inputLabel').textContent = 'Input (Plain Text)';
+    document.getElementById('convertBtn').textContent = '🔒 Encode';
+  } else {
+    document.getElementById('inputLabel').textContent = 'Input (Base64)';
+    document.getElementById('convertBtn').textContent = '🔓 Decode';
+  }
+  
+  clearB64();
+}
+
+function updateInfo() {
+  const inp = document.getElementById('b64Input').value;
+  const out = document.getElementById('b64Output').value;
+  document.getElementById('inputInfo').textContent = inp.length + ' karakter';
+  document.getElementById('outputInfo').textContent = out.length + ' karakter';
+}
+
+document.getElementById('b64Input').addEventListener('input', updateInfo);
+
+function convertB64() {
+  const input = document.getElementById('b64Input').value.trim();
+  if (!input) {
+    alert('Isi input dulu!');
+    return;
+  }
+
+  const output = document.getElementById('b64Output');
+
+  try {
+    if (mode === 'encode') {
+      // Handle unicode properly
+      const encoded = btoa(unescape(encodeURIComponent(input)));
+      output.value = encoded;
+    } else {
+      const decoded = decodeURIComponent(escape(atob(input)));
+      output.value = decoded;
+    }
+    updateInfo();
+  } catch (err) {
+    output.value = '❌ Error: ' + err.message + '\n\nPastiin input valid ya!';
+    updateInfo();
+  }
+}
+
+function swapB64() {
+  const inp = document.getElementById('b64Input');
+  const out = document.getElementById('b64Output');
+  const temp = inp.value;
+  inp.value = out.value;
+  out.value = temp;
+  
+  // Auto switch mode
+  mode = mode === 'encode' ? 'decode' : 'encode';
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(b => b.classList.remove('active'));
+  tabs[mode === 'encode' ? 0 : 1].classList.add('active');
+  
+  if (mode === 'encode') {
+    document.getElementById('inputLabel').textContent = 'Input (Plain Text)';
+    document.getElementById('convertBtn').textContent = '🔒 Encode';
+  } else {
+    document.getElementById('inputLabel').textContent = 'Input (Base64)';
+    document.getElementById('convertBtn').textContent = '🔓 Decode';
+  }
+  
+  updateInfo();
+}
+
+function clearB64() {
+  document.getElementById('b64Input').value = '';
+  document.getElementById('b64Output').value = '';
+  updateInfo();
+}
+
+function copyB64() {
+  const out = document.getElementById('b64Output').value;
+  if (!out) {
+    alert('Belum ada hasil!');
+    return;
+  }
+  navigator.clipboard.writeText(out).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }).catch(() => {
+    alert('Gagal copy');
+  });
+}
+
+updateInfo();
+</script>
+<div class="wenzz-credit">© 2026 WenzZTools • by <span>@WenzZ</span></div>
+<script>
+  // Auto-sync tema dari homepage
+  (function() {
+    const saved = localStorage.getItem('wenzz-theme');
+    if (saved) {
+      document.body.classList.add(saved);
+    }
+  })();
+</script>
+</body>
+</html>

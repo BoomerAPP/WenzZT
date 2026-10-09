@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Meme Generator - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.upload-area { background: var(--bg-card); border: 2px dashed var(--border); border-radius: 16px; padding: 32px 20px; text-align: center; cursor: pointer; transition: var(--transition); margin-bottom: 12px; }
+.upload-area:hover { border-color: var(--accent); background: var(--bg-hover); box-shadow: var(--glow); }
+.upload-icon { font-size: 42px; margin-bottom: 10px; opacity: 0.5; }
+.upload-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.upload-desc { font-size: 11px; color: var(--text-secondary); }
+.upload-input { display: none; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field select { width: 100%; padding: 11px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; }
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.style-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.style-btn { padding: 9px 4px; background: var(--bg-secondary); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text-secondary); font-size: 11px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-align: center; }
+.style-btn.active { border-color: var(--accent); color: var(--accent); background: var(--bg-hover); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline { width: 100%; padding: 12px; background: transparent; color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 8px; font-family: inherit; }
+.btn-outline:hover { background: var(--bg-hover); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+#memeCanvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+.tips { background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+.tips strong { color: #3b82f6; }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Meme Generator</h1>
+      <p class="tool-sub">Bikin meme cepat & lucu</p>
+    </div>
+  </div>
+
+  <div class="tips">
+    <strong>💡 Cara pakai:</strong> Upload gambar, tulis text atas + bawah, download hasilnya. Cocok buat template meme klasik.
+  </div>
+
+  <div class="upload-area" onclick="document.getElementById('fileInput').click()" id="uploadArea">
+    <div class="upload-icon">🖼️</div>
+    <div class="upload-title">Tap untuk pilih gambar</div>
+    <div class="upload-desc">Format: JPG, PNG, WEBP (max 5MB)</div>
+    <input type="file" id="fileInput" class="upload-input" accept="image/*" onchange="handleFile(this.files[0])">
+  </div>
+
+  <div class="section">
+    <h3>✏️ Text Meme</h3>
+    <div class="field">
+      <label>Text Atas</label>
+      <input type="text" id="topText" placeholder="Tulis text atas..." maxlength="80" value="KETIKA KAMU" oninput="livePreview()">
+    </div>
+    <div class="field">
+      <label>Text Bawah</label>
+      <input type="text" id="bottomText" placeholder="Tulis text bawah..." maxlength="80" value="BUKA WENZZTOOLS" oninput="livePreview()">
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🎨 Style Text</h3>
+    <div class="field-row">
+      <div class="field">
+        <label>Warna Text</label>
+        <select id="textColor" onchange="livePreview()">
+          <option value="#ffffff" selected>Putih</option>
+          <option value="#000000">Hitam</option>
+          <option value="#ffff00">Kuning</option>
+          <option value="#ff0000">Merah</option>
+          <option value="#00ff00">Hijau</option>
+          <option value="#00ffff">Cyan</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Warna Outline</label>
+        <select id="outlineColor" onchange="livePreview()">
+          <option value="#000000" selected>Hitam</option>
+          <option value="#ffffff">Putih</option>
+          <option value="#ff0000">Merah</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Ukuran Text</label>
+      <div class="style-row">
+        <div class="style-btn" data-size="small" onclick="pickSize('small', this)">Kecil</div>
+        <div class="style-btn active" data-size="medium" onclick="pickSize('medium', this)">Sedang</div>
+        <div class="style-btn" data-size="large" onclick="pickSize('large', this)">Besar</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateMeme()">🎨 Generate Meme</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="memeCanvas"></canvas>
+    <button class="btn-outline" onclick="downloadMeme()">⬇️ Download PNG</button>
+    <button class="btn-outline" onclick="resetMeme()">🔄 Reset</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+let uploadedImage = null;
+let textSize = 'medium';
+
+// Drag & drop
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = 'var(--accent)';
+});
+uploadArea.addEventListener('dragleave', () => {
+  uploadArea.style.borderColor = '';
+});
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+function handleFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('❌ File harus gambar');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('⚠️ Max 5MB ya');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      uploadedImage = img;
+      showToast('✅ Gambar ke-load!');
+      livePreview();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function pickSize(size, btn) {
+  textSize = size;
+  document.querySelectorAll('.style-btn').forEach(o => o.classList.remove('active'));
+  btn.classList.add('active');
+  livePreview();
+}
+
+function getFontSize(canvasHeight) {
+  const base = canvasHeight / 10;
+  if (textSize === 'small') return base * 0.7;
+  if (textSize === 'large') return base * 1.3;
+  return base;
+}
+
+function drawMemeText(ctx, text, y, canvasW, canvasH, isTop) {
+  if (!text.trim()) return;
+
+  const fontSize = getFontSize(canvasH);
+  ctx.font = 'bold ' + fontSize + 'px Impact, "Arial Black", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = isTop ? 'top' : 'bottom';
+
+  const textColor = document.getElementById('textColor').value;
+  const outlineColor = document.getElementById('outlineColor').value;
+
+  // Wrap text
+  const maxWidth = canvasW - 40;
+  const words = text.toUpperCase().split(' ');
+  const lines = [];
+  let line = '';
+
+  for (let i = 0; i < words.length; i++) {
+    const test = line + words[i] + ' ';
+    if (ctx.measureText(test).width > maxWidth && i > 0) {
+      lines.push(line.trim());
+      line = words[i] + ' ';
+    } else {
+      line = test;
+    }
+  }
+  lines.push(line.trim());
+
+  const lineH = fontSize * 1.1;
+  const totalH = lines.length * lineH;
+  const startY = isTop ? y : y - totalH + lineH;
+
+  ctx.lineWidth = fontSize / 8;
+  ctx.strokeStyle = outlineColor;
+  ctx.lineJoin = 'round';
+
+  lines.forEach((l, i) => {
+    const ly = startY + i * lineH;
+    ctx.strokeText(l, canvasW / 2, ly);
+    ctx.fillStyle = textColor;
+    ctx.fillText(l, canvasW / 2, ly);
+  });
+}
+
+function livePreview() {
+  if (!uploadedImage) return;
+  generateMeme();
+}
+
+function generateMeme() {
+  if (!uploadedImage) {
+    showToast('⚠️ Upload gambar dulu!');
+    return;
+  }
+
+  const canvas = document.getElementById('memeCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Max width 1080, keep aspect ratio
+  const maxW = 1080;
+  let w = uploadedImage.naturalWidth;
+  let h = uploadedImage.naturalHeight;
+
+  if (w > maxW) {
+    h = (maxW / w) * h;
+    w = maxW;
+  }
+
+  canvas.width = w;
+  canvas.height = h;
+
+  // Draw image
+  ctx.drawImage(uploadedImage, 0, 0, w, h);
+
+  // Draw texts
+  const topText = document.getElementById('topText').value;
+  const bottomText = document.getElementById('bottomText').value;
+
+  drawMemeText(ctx, topText, 20, w, h, true);
+  drawMemeText(ctx, bottomText, h - 20, w, h, false);
+
+  // Watermark
+  ctx.font = 'bold 11px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.lineWidth = 3;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.strokeText('WenzZTools', w - 10, h - 5);
+  ctx.fillText('WenzZTools', w - 10, h - 5);
+
+  document.getElementById('previewWrap').classList.add('show');
+}
+
+function downloadMeme() {
+  if (!uploadedImage) {
+    showToast('⚠️ Generate meme dulu!');
+    return;
+  }
+  const canvas = document.getElementById('memeCanvas');
+  const link = document.createElement('a');
+  link.download = 'meme-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Meme ke-download!');
+}
+
+function resetMeme() {
+  uploadedImage = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('topText').value = '';
+  document.getElementById('bottomText').value = '';
+  document.getElementById('previewWrap').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

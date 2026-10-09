@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TikTok Downloader - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 120px;
+}
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.input-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.input-box label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.input-box input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+}
+.input-box input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.btn-main {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 12px;
+}
+.btn-main:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-main:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.loading {
+  display: none;
+  text-align: center;
+  padding: 24px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.loading.show { display: block; }
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.result-box {
+  display: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-top: 16px;
+}
+.result-box.show { display: block; }
+
+.thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9/16;
+  max-height: 400px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.play-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  backdrop-filter: blur(4px);
+}
+
+.info-row {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+.info-row strong {
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.dl-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.dl-btn {
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.dl-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+.dl-btn.primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border-color: var(--accent);
+}
+
+.error-box {
+  display: none;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 13px;
+  margin-top: 16px;
+  text-align: center;
+}
+.error-box.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../index.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">TikTok Downloader</h1>
+      <p class="tool-sub">Download tanpa watermark</p>
+    </div>
+  </div>
+
+  <div class="input-box">
+    <label for="ttUrl">Link TikTok</label>
+    <input type="text" id="ttUrl" placeholder="https://www.tiktok.com/@user/video/...">
+    <button class="btn-main" id="ttBtn" onclick="downloadTikTok()">⬇️ Download</button>
+  </div>
+
+  <div class="loading" id="ttLoading">
+    <div class="spinner"></div>
+    Mengambil data... tunggu sebentar
+  </div>
+
+  <div class="error-box" id="ttError"></div>
+
+  <div class="result-box" id="ttResult">
+    <div class="thumb-wrap">
+      <img id="ttThumb" src="" alt="thumbnail">
+      <div class="play-badge">▶</div>
+    </div>
+    <div class="info-row">
+      <strong>Judul</strong>
+      <span id="ttTitle">-</span>
+    </div>
+    <div class="info-row">
+      <strong>Author</strong>
+      <span id="ttAuthor">-</span>
+    </div>
+    <div class="dl-actions">
+      <a class="dl-btn primary" id="ttDlVideo" target="_blank" rel="noopener">🎬 Video (No WM)</a>
+      <a class="dl-btn" id="ttDlAudio" target="_blank" rel="noopener">🎵 Audio MP3</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function downloadTikTok() {
+  const url = document.getElementById('ttUrl').value.trim();
+  if (!url) {
+    alert('Masukkan link TikTok dulu!');
+    return;
+  }
+
+  if (!url.includes('tiktok.com')) {
+    alert('Link harus dari tiktok.com');
+    return;
+  }
+
+  const btn = document.getElementById('ttBtn');
+  const loading = document.getElementById('ttLoading');
+  const errorBox = document.getElementById('ttError');
+  const resultBox = document.getElementById('ttResult');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Memproses...';
+  loading.classList.add('show');
+  errorBox.classList.remove('show');
+  resultBox.classList.remove('show');
+
+  try {
+    const apiUrl = 'https://www.tikwm.com/api/?url=' + encodeURIComponent(url) + '&hd=1';
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+
+    if (data.code !== 0 || !data.data) {
+      throw new Error(data.msg || 'Gagal ambil data. Cek link atau coba lagi.');
+    }
+
+    const v = data.data;
+    document.getElementById('ttThumb').src = v.cover || v.origin_cover || '';
+    document.getElementById('ttTitle').textContent = v.title || 'Tanpa judul';
+    document.getElementById('ttAuthor').textContent = '@' + (v.author?.unique_id || 'unknown');
+
+    const videoUrl = v.play || v.wmplay || '';
+    const audioUrl = v.music || '';
+
+    document.getElementById('ttDlVideo').href = videoUrl;
+    document.getElementById('ttDlAudio').href = audioUrl;
+
+    resultBox.classList.add('show');
+  } catch (err) {
+    errorBox.textContent = '❌ ' + err.message;
+    errorBox.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇️ Download';
+    loading.classList.remove('show');
+  }
+}
+
+// Enter = download
+document.getElementById('ttUrl').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') downloadTikTok();
+});
+</script>
+<div class="wenzz-credit">© 2026 WenzZTools • by <span>@WenzZ</span></div>
+<script>
+  // Auto-sync tema dari homepage
+  (function() {
+    const saved = localStorage.getItem('wenzz-theme');
+    if (saved) {
+      document.body.classList.add(saved);
+    }
+  })();
+</script>
+</body>
+</html>

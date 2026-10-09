@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Loading - WenzZTools</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #0a0a0a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* LOGO + SPINNER */
+.logo-wrap {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 110px;
+  height: 110px;
+  border-radius: 24px;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+  position: relative;
+  box-shadow: 0 0 50px rgba(0, 200, 255, 0.5), 0 0 100px rgba(0, 150, 255, 0.2);
+  animation: pulseLogo 2s ease-in-out infinite;
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@keyframes pulseLogo {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 50px rgba(0, 200, 255, 0.5), 0 0 100px rgba(0, 150, 255, 0.2);
+  }
+  50% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 70px rgba(0, 200, 255, 0.8), 0 0 130px rgba(0, 150, 255, 0.4);
+  }
+}
+
+/* SPINNER RING — warna cyan-biru */
+.spinner-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  margin: -70px 0 0 -70px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #00c8ff;
+  border-right-color: #0096ff;
+  animation: spin 1s linear infinite;
+  z-index: 1;
+}
+
+.spinner-ring::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-bottom-color: #00e5ff;
+  border-left-color: #0080ff;
+  animation: spin 1.5s linear infinite reverse;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* APP NAME */
+.app-name {
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.app-name span {
+  color: #00c8ff;
+  font-weight: 300;
+}
+
+/* TAGLINE */
+.tagline {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.tagline strong {
+  color: #00c8ff;
+  font-weight: 600;
+}
+
+/* LOADING BAR — warna cyan-biru */
+.loading-bar {
+  width: 240px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.loading-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00e5ff, #00c8ff, #0096ff, #0080ff);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: shimmer 1.5s linear infinite;
+  transition: width 0.3s ease;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* LOADING TEXT */
+.loading-text {
+  font-size: 11px;
+  color: rgba(0, 200, 255, 0.7);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+.loading-text::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* CREDIT */
+.credit {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.credit span {
+  color: #00c8ff;
+  font-weight: 700;
+}
+
+/* FOOTER VERSION */
+.version {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen">
+
+  <!-- LOGO + SPINNER -->
+  <div class="logo-wrap">
+    <div class="spinner-ring"></div>
+    <div class="logo-icon">
+      <img src="logo.png" alt="WenzZTools" onerror="this.outerHTML='<div style=\'color:#00c8ff;font-size:48px;font-weight:800;\'>W</div>'">
+    </div>
+  </div>
+
+  <!-- APP NAME -->
+  <div class="app-name">WenzZ<span>Tools</span></div>
+
+  <!-- TAGLINE -->
+  <div class="tagline">
+    Thanks for support<br>
+    <strong>WenzZ Tools</strong>
+  </div>
+
+  <!-- LOADING BAR -->
+  <div class="loading-bar">
+    <div class="loading-fill" id="loadingFill"></div>
+  </div>
+  <div class="loading-text" id="loadingText">Loading</div>
+
+</div>
+
+<!-- CREDIT -->
+<div class="credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+<div class="version">v1.0.0</div>
+
+<script>
+// Loading progress animation
+var progress = 0;
+var fill = document.getElementById('loadingFill');
+var text = document.getElementById('loadingText');
+
+var interval = setInterval(function() {
+  progress += Math.random() * 8 + 2;
+  if (progress > 100) progress = 100;
+  fill.style.width = progress + '%';
+
+  if (progress >= 100) {
+    clearInterval(interval);
+    text.textContent = 'Siap!';
+  }
+}, 100);
+
+// Redirect setelah 2.2 detik
+setTimeout(function() {
+  window.location.href = 'index.html';
+}, 2200);
+</script>
+
+</body>
+</html>

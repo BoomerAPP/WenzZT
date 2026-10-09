@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Case Converter - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.section h3 button { background: transparent; border: 1px solid var(--border-light); color: var(--text-secondary); padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.section h3 button:hover { background: var(--bg-hover); color: var(--text-primary); }
+textarea { width: 100%; min-height: 140px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; line-height: 1.6; }
+textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.case-btn { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-align: left; }
+.case-btn:hover { background: var(--bg-hover); border-color: var(--accent); color: var(--accent); }
+.case-btn:active { transform: scale(0.97); }
+.case-btn .case-icon { font-size: 16px; display: block; margin-bottom: 4px; }
+.case-btn .case-name { display: block; }
+.case-btn .case-ex { display: block; font-size: 9.5px; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div><h1 class="tool-title">Case Converter</h1><p class="tool-sub">Ubah huruf besar-kecil teks</p></div>
+  </div>
+  <div class="section">
+    <h3><span>📝 Teks</span><button onclick="pasteText()">📋 Paste</button></h3>
+    <textarea id="textInput" placeholder="Ketik atau paste teks di sini..." oninput="updateStats()"></textarea>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:6px;text-align:right;"><span id="charInfo">0</span> karakter</div>
+  </div>
+  <div class="section">
+    <h3>🎨 Pilih Format</h3>
+    <div class="case-grid">
+      <button class="case-btn" onclick="convertCase('upper')"><span class="case-icon">🔠</span><span class="case-name">UPPERCASE</span><span class="case-ex">SEMUA HURUF BESAR</span></button>
+      <button class="case-btn" onclick="convertCase('lower')"><span class="case-icon">🔡</span><span class="case-name">lowercase</span><span class="case-ex">semua huruf kecil</span></button>
+      <button class="case-btn" onclick="convertCase('title')"><span class="case-icon">📖</span><span class="case-name">Title Case</span><span class="case-ex">Setiap Kata Kapital</span></button>
+      <button class="case-btn" onclick="convertCase('sentence')"><span class="case-icon">📄</span><span class="case-name">Sentence Case</span><span class="case-ex">Kalimat seperti ini</span></button>
+      <button class="case-btn" onclick="convertCase('camel')"><span class="case-icon">🐪</span><span class="case-name">camelCase</span><span class="case-ex">kataKataSeperti</span></button>
+      <button class="case-btn" onclick="convertCase('snake')"><span class="case-icon">🐍</span><span class="case-name">snake_case</span><span class="case-ex">kata_kata_seperti</span></button>
+      <button class="case-btn" onclick="convertCase('kebab')"><span class="case-icon">🍢</span><span class="case-name">kebab-case</span><span class="case-ex">kata-kata-seperti</span></button>
+      <button class="case-btn" onclick="convertCase('pascal')"><span class="case-icon">📕</span><span class="case-name">PascalCase</span><span class="case-ex">KataKataSeperti</span></button>
+      <button class="case-btn" onclick="convertCase('alternating')"><span class="case-icon">🎭</span><span class="case-name">aLtErNaTiNg</span><span class="case-ex">Ganti besar-kecil</span></button>
+      <button class="case-btn" onclick="convertCase('inverse')"><span class="case-icon">🔄</span><span class="case-name">iNVERSE cASE</span><span class="case-ex">Balik besar kecil</span></button>
+    </div>
+  </div>
+  <div class="action-row">
+    <button class="btn-action primary" onclick="copyText()">📋 Copy Hasil</button>
+    <button class="btn-action" onclick="clearText()">🗑️ Clear</button>
+  </div>
+  <div class="section" style="margin-top:12px;">
+    <h3>📊 Statistik</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:var(--accent);" id="wordStat">0</div>
+        <div style="font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-top:2px;">Kata</div>
+      </div>
+      <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:var(--accent);" id="charStat">0</div>
+        <div style="font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-top:2px;">Karakter</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+<script>
+(function() { const theme = localStorage.getItem('wenzz-theme'); if (theme) document.body.classList.add(theme); })();
+function updateStats() {
+  const text = document.getElementById('textInput').value;
+  document.getElementById('charInfo').textContent = text.length;
+  document.getElementById('charStat').textContent = text.length;
+  document.getElementById('wordStat').textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+}
+function convertCase(type) {
+  const ta = document.getElementById('textInput');
+  let text = ta.value;
+  if (!text) { showToast('⚠️ Ketik teks dulu!'); return; }
+  switch(type) {
+    case 'upper': text = text.toUpperCase(); break;
+    case 'lower': text = text.toLowerCase(); break;
+    case 'title': text = text.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); break;
+    case 'sentence': text = text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase()); break;
+    case 'camel': { const w = text.toLowerCase().split(/\s+/); text = w[0] + w.slice(1).map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(''); break; }
+    case 'snake': text = text.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, ''); break;
+    case 'kebab': text = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''); break;
+    case 'pascal': text = text.toLowerCase().split(/\s+/).map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(''); break;
+    case 'alternating': text = text.split('').map((c, i) => i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()).join(''); break;
+    case 'inverse': text = text.split('').map(c => c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()).join(''); break;
+  }
+  ta.value = text;
+  updateStats();
+  showToast('✅ ' + type.toUpperCase());
+}
+function pasteText() {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.readText().then(t => { document.getElementById('textInput').value = t; updateStats(); showToast('📋 Paste berhasil'); }).catch(() => showToast('⚠️ Paste manual aja'));
+  } else { showToast('⚠️ Paste manual aja'); }
+}
+function copyText() {
+  const text = document.getElementById('textInput').value;
+  if (!text) { showToast('⚠️ Belum ada teks'); return; }
+  if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(() => showToast('📋 Ke-copy!')).catch(() => fallbackCopy(text)); } else { fallbackCopy(text); }
+}
+function fallbackCopy(text) { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); showToast('📋 Ke-copy!'); } catch(e) { showToast('❌ Gagal copy'); } document.body.removeChild(ta); }
+function clearText() { document.getElementById('textInput').value = ''; updateStats(); showToast('🗑️ Dihapus'); }
+function showToast(msg) { const t = document.createElement('div'); t.textContent = msg; t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);'; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+updateStats();
+</script>
+</body>
+</html>

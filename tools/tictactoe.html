@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tic Tac Toe - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.score-board { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.score-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+.score-card .score-num { font-size: 22px; font-weight: 800; color: var(--accent); display: block; }
+.score-card .score-lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+.status-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; min-height: 48px; display: flex; align-items: center; justify-content: center; }
+.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: var(--bg-card); padding: 12px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 16px; }
+.cell { aspect-ratio: 1; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 800; cursor: pointer; transition: var(--transition); user-select: none; }
+.cell:hover:not(.disabled) { background: var(--bg-hover); border-color: var(--accent); transform: scale(1.02); }
+.cell:active:not(.disabled) { transform: scale(0.98); }
+.cell.disabled { cursor: not-allowed; }
+.cell.x { color: #3b82f6; text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+.cell.o { color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+.cell.win { background: rgba(16, 185, 129, 0.2); border-color: #10b981; animation: winPulse 0.5s; }
+@keyframes winPulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: inherit; margin-bottom: 8px; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline { width: 100%; padding: 12px; background: transparent; color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-outline:hover { background: var(--bg-hover); }
+.mode-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.mode-btn { padding: 12px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text-secondary); font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: inherit; text-align: center; }
+.mode-btn.active { border-color: var(--accent); color: var(--accent); background: var(--bg-hover); }
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div><h1 class="tool-title">Tic Tac Toe</h1><p class="tool-sub">Game X-O lawan AI</p></div>
+  </div>
+  <div class="mode-row">
+    <div class="mode-btn active" data-mode="ai" onclick="setMode('ai', this)">🤖 vs AI</div>
+    <div class="mode-btn" data-mode="2p" onclick="setMode('2p', this)">👥 vs Teman</div>
+  </div>
+  <div class="score-board">
+    <div class="score-card"><span class="score-num" id="scoreX">0</span><span class="score-lbl">❌ X</span></div>
+    <div class="score-card"><span class="score-num" id="scoreDraw">0</span><span class="score-lbl">🤝 Seri</span></div>
+    <div class="score-card"><span class="score-num" id="scoreO">0</span><span class="score-lbl">⭕ O</span></div>
+  </div>
+  <div class="status-box" id="statusBox">Giliran X</div>
+  <div class="board" id="board">
+    <div class="cell" onclick="playCell(0)"></div>
+    <div class="cell" onclick="playCell(1)"></div>
+    <div class="cell" onclick="playCell(2)"></div>
+    <div class="cell" onclick="playCell(3)"></div>
+    <div class="cell" onclick="playCell(4)"></div>
+    <div class="cell" onclick="playCell(5)"></div>
+    <div class="cell" onclick="playCell(6)"></div>
+    <div class="cell" onclick="playCell(7)"></div>
+    <div class="cell" onclick="playCell(8)"></div>
+  </div>
+  <button class="btn-main" onclick="resetBoard()">🔄 Main Lagi</button>
+  <button class="btn-outline" onclick="resetScore()">🗑️ Reset Skor</button>
+</div>
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+<script>
+(function() { const theme = localStorage.getItem('wenzz-theme'); if (theme) document.body.classList.add(theme); })();
+let board = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
+let gameActive = true;
+let gameMode = 'ai';
+let scores = { X: 0, O: 0, draw: 0 };
+const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function setMode(mode, btn) {
+  gameMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  resetBoard();
+}
+function playCell(idx) {
+  if (!gameActive || board[idx] !== '') return;
+  if (gameMode === 'ai' && currentPlayer === 'O') return;
+  makeMove(idx, currentPlayer);
+  if (gameActive && gameMode === 'ai' && currentPlayer === 'O') {
+    setTimeout(aiMove, 400);
+  }
+}
+function makeMove(idx, player) {
+  board[idx] = player;
+  const cell = document.querySelectorAll('.cell')[idx];
+  cell.textContent = player === 'X' ? '✕' : '○';
+  cell.classList.add(player.toLowerCase());
+  cell.classList.add('disabled');
+  const win = checkWin();
+  if (win) { handleWin(win); return; }
+  if (board.every(c => c !== '')) { handleDraw(); return; }
+  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+  updateStatus();
+}
+function aiMove() {
+  if (!gameActive) return;
+  // Cek menang
+  for (let i = 0; i < 9; i++) { if (board[i] === '') { board[i] = 'O'; if (checkWin()) { board[i] = ''; makeMove(i, 'O'); return; } board[i] = ''; } }
+  // Blokir X
+  for (let i = 0; i < 9; i++) { if (board[i] === '') { board[i] = 'X'; if (checkWin()) { board[i] = ''; makeMove(i, 'O'); return; } board[i] = ''; } }
+  // Ambil tengah
+  if (board[4] === '') { makeMove(4, 'O'); return; }
+  // Ambil sudut
+  const corners = [0, 2, 6, 8].filter(i => board[i] === '');
+  if (corners.length) { makeMove(corners[Math.floor(Math.random() * corners.length)], 'O'); return; }
+  // Ambil sembarang
+  const empty = board.map((c, i) => c === '' ? i : -1).filter(i => i !== -1);
+  if (empty.length) makeMove(empty[Math.floor(Math.random() * empty.length)], 'O');
+}
+function checkWin() {
+  for (const pattern of winPatterns) {
+    const [a, b, c] = pattern;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return pattern;
+  }
+  return null;
+}
+function handleWin(pattern) {
+  gameActive = false;
+  pattern.forEach(i => document.querySelectorAll('.cell')[i].classList.add('win'));
+  if (currentPlayer === 'X') { scores.X++; document.getElementById('statusBox').textContent = '🎉 X Menang!'; }
+  else { scores.O++; document.getElementById('statusBox').textContent = '🎉 O Menang!'; }
+  updateScore();
+  playBeep();
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+function handleDraw() {
+  gameActive = false;
+  scores.draw++;
+  document.getElementById('statusBox').textContent = '🤝 Seri!';
+  updateScore();
+}
+function updateStatus() {
+  document.getElementById('statusBox').textContent = 'Giliran ' + (currentPlayer === 'X' ? '❌ X' : '⭕ O');
+}
+function updateScore() {
+  document.getElementById('scoreX').textContent = scores.X;
+  document.getElementById('scoreO').textContent = scores.O;
+  document.getElementById('scoreDraw').textContent = scores.draw;
+}
+function resetBoard() {
+  board = ['', '', '', '', '', '', '', '', ''];
+  currentPlayer = 'X';
+  gameActive = true;
+  document.querySelectorAll('.cell').forEach(c => { c.textContent = ''; c.className = 'cell'; });
+  updateStatus();
+}
+function resetScore() { scores = { X: 0, O: 0, draw: 0 }; updateScore(); resetBoard(); showToast('🗑️ Skor direset'); }
+function playBeep() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); [600, 800, 1000].forEach((freq, i) => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = freq; osc.type = 'sine'; const start = ctx.currentTime + i * 0.1; gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(0.2, start + 0.02); gain.gain.linearRampToValueAtTime(0, start + 0.1); osc.start(start); osc.stop(start + 0.12); }); } catch(e) {} }
+function showToast(msg) { const t = document.createElement('div'); t.textContent = msg; t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);'; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+</script>
+</body>
+</html>

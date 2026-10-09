@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Anime Quotes - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field textarea { width: 100%; padding: 11px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; }
+.field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field textarea { min-height: 80px; }
+
+.template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tpl-option { aspect-ratio: 1; border-radius: 10px; border: 2px solid var(--border); cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+.tpl-option:hover { transform: scale(1.05); }
+.tpl-option.active { border-color: var(--accent); box-shadow: 0 0 12px var(--accent); }
+.tpl-option.active::after { content: '✓'; position: absolute; top: 4px; right: 4px; background: var(--accent); color: var(--bg-primary); width: 18px; height: 18px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.tpl-1 { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); }
+.tpl-2 { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
+.tpl-3 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+.tpl-4 { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); }
+.tpl-5 { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
+.tpl-6 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline { width: 100%; padding: 12px; background: transparent; color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 8px; font-family: inherit; }
+.btn-outline:hover { background: var(--bg-hover); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+.preview-canvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Anime Quotes</h1>
+      <p class="tool-sub">Bikin gambar quote anime aesthetic</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>💬 Quote</h3>
+    <div class="field">
+      <label>Quote (kosongin buat random)</label>
+      <textarea id="animeText" maxlength="150" placeholder="Tulis quote anime... atau biarin kosong buat random"></textarea>
+    </div>
+    <div class="field">
+      <label>Karakter / Anime</label>
+      <input type="text" id="animeChar" placeholder="Contoh: Naruto" maxlength="30" value="Naruto">
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🎨 Tema Warna</h3>
+    <div class="template-grid">
+      <div class="tpl-option tpl-1 active" data-tpl="1" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-2" data-tpl="2" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-3" data-tpl="3" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-4" data-tpl="4" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-5" data-tpl="5" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-6" data-tpl="6" onclick="pickTpl(this)"></div>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateAnime()">⚡ Generate Quote</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="animeCanvas" class="preview-canvas"></canvas>
+    <button class="btn-outline" onclick="downloadAnime()">⬇️ Download PNG</button>
+    <button class="btn-outline" onclick="randomAnime()">🎲 Quote Random Lain</button>
+    <button class="btn-outline" onclick="resetAnime()">🔄 Reset</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+const animeQuotes = [
+  { text: "Orang yang tidak bisa melindungi temannya, tidak berhak disebut Hokage.", char: "Naruto" },
+  { text: "Aku tidak akan mundur. Kalau aku mundur, aku bukan lagi diriku.", char: "Levi Ackerman" },
+  { text: "Kekuatan sejati bukan soal menang atau kalah, tapi soal melindungi.", char: "Luffy" },
+  { text: "Kalau kamu tidak bisa melindungi orang yang kamu cintai, itu bukan cinta.", char: "Gintoki" },
+  { text: "Aku akan menjadi raja bajak laut!", char: "Luffy" },
+  { text: "Orang yang tersenyum saat berpisah, adalah orang yang paling kuat.", char: "Tokyo Ghoul" },
+  { text: "Aku tidak peduli seberapa banyak aku harus berkorban, aku akan melindunginya.", char: "Eren Yeager" },
+  { text: "Setiap orang punya cerita yang tidak ingin mereka bagi.", char: "Naruto" },
+  { text: "Kalau kita gagal, kita coba lagi. Kalau kita jatuh, kita bangun lagi.", char: "Asta" },
+  { text: "Yang paling penting bukanlah seberapa kuat kamu, tapi seberapa keras kamu mencoba.", char: "Might Guy" },
+  { text: "Jangan menyerah, karena dengan menyerah semuanya akan berakhir.", char: "Tanjiro" },
+  { text: "Aku akan melindungi apa yang ingin aku lindungi, dengan tanganku sendiri.", char: "Ichigo" },
+  { text: "Kesepian itu bukan kelemahan, tapi bagian dari kekuatan.", char: "Kakashi" },
+  { text: "Hidup bukan tentang menunggu badai berlalu, tapi belajar menari di tengah hujan.", char: "Violet Evergarden" },
+  { text: "Satu-satunya yang bisa mengalahkan dirimu adalah dirimu sendiri.", char: "Saitama" },
+  { text: "Mimpi itu bukan untuk diimpikan, tapi untuk dikejar.", char: "Mikasa" },
+  { text: "Kalau dunia tidak adil, buatlah duniamu sendiri.", char: "Light Yagami" },
+  { text: "Aku akan terus maju sampai aku tidak bisa melangkah lagi.", char: "Naruto" },
+  { text: "Kekuatan itu tidak datang dari fisik, tapi dari hati.", char: "All Might" },
+  { text: "Orang yang berhenti belajar, akan tertinggal selamanya.", char: "Kakashi" }
+];
+
+const templates = {
+  '1': { colors: ['#ff9a9e', '#fad0c4'], textColor: '#1a1a1a', accentColor: '#ff6b9d' },
+  '2': { colors: ['#a1c4fd', '#c2e9fb'], textColor: '#1a1a1a', accentColor: '#3b82f6' },
+  '3': { colors: ['#fbc2eb', '#a6c1ee'], textColor: '#1a1a1a', accentColor: '#a855f7' },
+  '4': { colors: ['#d299c2', '#fef9d7'], textColor: '#1a1a1a', accentColor: '#8b5cf6' },
+  '5': { colors: ['#84fab0', '#8fd3f4'], textColor: '#1a1a1a', accentColor: '#10b981' },
+  '6': { colors: ['#1a1a2e', '#16213e'], textColor: '#fff', accentColor: '#8b5cf6' }
+};
+
+let selectedTpl = '1';
+
+function pickTpl(el) {
+  document.querySelectorAll('.tpl-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  selectedTpl = el.dataset.tpl;
+}
+
+function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+  for (let n = 0; n < words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + ' ';
+    } else line = test;
+  }
+  lines.push(line.trim());
+  const startY = y - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+  return lines.length;
+}
+
+function generateAnime() {
+  let text = document.getElementById('animeText').value.trim();
+  let char = document.getElementById('animeChar').value.trim();
+
+  if (!text) {
+    const r = animeQuotes[Math.floor(Math.random() * animeQuotes.length)];
+    text = r.text;
+    if (!char) char = r.char;
+    document.getElementById('animeText').value = text;
+    document.getElementById('animeChar').value = char;
+  }
+  if (!char) char = 'Anime';
+
+  const canvas = document.getElementById('animeCanvas');
+  const W = 1080;
+  const H = 1080;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const tpl = templates[selectedTpl];
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, tpl.colors[0]);
+  grad.addColorStop(1, tpl.colors[1]);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Decorative dots / stars
+  ctx.globalAlpha = 0.15;
+  ctx.fillStyle = tpl.textColor;
+  for (let i = 0; i < 40; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    const r = Math.random() * 3 + 1;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Big circle decoration
+  ctx.globalAlpha = 0.1;
+  ctx.fillStyle = tpl.textColor;
+  ctx.beginPath();
+  ctx.arc(W - 200, 200, 280, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(200, H - 200, 220, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Top accent line
+  ctx.fillStyle = tpl.accentColor;
+  ctx.fillRect(W / 2 - 40, 80, 80, 6);
+
+  // "❝" mark
+  ctx.fillStyle = tpl.accentColor;
+  ctx.globalAlpha = 0.4;
+  ctx.font = 'bold 240px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('❝', W / 2, 280);
+  ctx.globalAlpha = 1;
+
+  // Quote text
+  ctx.fillStyle = tpl.textColor;
+  ctx.font = 'italic 46px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const maxW = W - 200;
+  const lines = drawWrapped(ctx, text, W / 2, H / 2 + 50, maxW, 62);
+
+  // Char / author
+  ctx.fillStyle = tpl.accentColor;
+  ctx.font = 'bold 32px Georgia, serif';
+  ctx.fillText('— ' + char, W / 2, H / 2 + 50 + lines * 40 + 80);
+
+  // Bottom accent line
+  ctx.fillStyle = tpl.accentColor;
+  ctx.fillRect(W / 2 - 40, H - 130, 80, 6);
+
+  // Watermark
+  ctx.fillStyle = tpl.textColor;
+  ctx.globalAlpha = 0.5;
+  ctx.font = '18px sans-serif';
+  ctx.fillText('WenzZTools • @WenzZDev', W / 2, H - 60);
+  ctx.globalAlpha = 1;
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadAnime() {
+  const canvas = document.getElementById('animeCanvas');
+  const link = document.createElement('a');
+  link.download = 'anime-quote-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Quote ke-download!');
+}
+
+function randomAnime() {
+  const r = animeQuotes[Math.floor(Math.random() * animeQuotes.length)];
+  document.getElementById('animeText').value = r.text;
+  document.getElementById('animeChar').value = r.char;
+  generateAnime();
+  showToast('🎲 Quote baru!');
+}
+
+function resetAnime() {
+  document.getElementById('animeText').value = '';
+  document.getElementById('animeChar').value = 'Naruto';
+  document.getElementById('previewWrap').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

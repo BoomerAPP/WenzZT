@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hubungi Developer - WenzZTools</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.admin-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px 120px;
+}
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.admin-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+.admin-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.dev-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.dev-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-primary);
+  font-size: 28px;
+  font-weight: 700;
+  box-shadow: var(--glow);
+}
+.dev-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.dev-role {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.dev-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dev-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.dev-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+.dev-btn .dev-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.dev-btn.wa .dev-icon { background: rgba(37, 211, 102, 0.15); color: #25d366; }
+.dev-btn.tg .dev-icon { background: rgba(0, 136, 204, 0.15); color: #0088cc; }
+.dev-btn.tt .dev-icon { background: rgba(255, 0, 80, 0.15); color: #ff0050; }
+.dev-btn.em .dev-icon { background: rgba(234, 67, 53, 0.15); color: #ea4335; }
+
+.form-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.form-box h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.form-box p {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.form-field {
+  margin-bottom: 12px;
+}
+.form-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: var(--transition);
+  resize: vertical;
+}
+.form-field textarea {
+  min-height: 100px;
+}
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.form-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 6px;
+}
+.form-submit:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.faq-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.faq-box h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.faq-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.faq-a {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.toast-mini {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 9999;
+  border: 1px solid var(--border-light);
+  pointer-events: none;
+  box-shadow: var(--shadow);
+}
+.toast-mini.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<div class="admin-page">
+
+  <div class="admin-header">
+    <div>
+      <h1 class="admin-title">👨‍💻 Hubungi Developer</h1>
+      <p class="admin-sub">Kritik, saran, atau laporan bug</p>
+    </div>
+  </div>
+
+  <!-- DEV PROFILE -->
+  <div class="dev-card">
+    <div class="dev-avatar">W</div>
+    <div class="dev-name">WenzZDev</div>
+    <div class="dev-role">Developer WenzZTools</div>
+    <div class="dev-contacts">
+      <a href="https://wa.me/628xxxxxxxxxx" target="_blank" class="dev-btn wa">
+        <div class="dev-icon">💬</div>
+        <span>WhatsApp</span>
+      </a>
+      <a href="https://t.me/wenzzdev" target="_blank" class="dev-btn tg">
+        <div class="dev-icon">✈️</div>
+        <span>Telegram</span>
+      </a>
+      <a href="https://tiktok.com/@vtdnth_gt" target="_blank" class="dev-btn tt">
+        <div class="dev-icon">🎵</div>
+        <span>TikTok @voidzerov2</span>
+      </a>
+      <a href="mailto:whinooketiga@gmail.com" class="dev-btn em">
+        <div class="dev-icon">✉️</div>
+        <span>Email</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- KRITIK & SARAN -->
+  <div class="form-box">
+    <h3>📝 Kritik & Saran</h3>
+    <p>Kirim kritik, saran, atau laporan bug. Kami baca semua masukan!</p>
+    
+    <div class="form-field">
+      <label>Nama / Username</label>
+      <input type="text" id="feedbackName" placeholder="Nama kamu (opsional)">
+    </div>
+
+    <div class="form-field">
+      <label>Kategori</label>
+      <select id="feedbackType">
+        <option value="saran">💡 Saran Fitur</option>
+        <option value="kritik">📢 Kritik</option>
+        <option value="bug">🐛 Laporan Bug</option>
+        <option value="pujian">🙌 Pujian</option>
+        <option value="lainnya">📌 Lainnya</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>Pesan</label>
+      <textarea id="feedbackMsg" placeholder="Tulis pesan kamu di sini..." rows="5"></textarea>
+    </div>
+
+    <button class="form-submit" onclick="kirimFeedback()">📤 Kirim ke Developer</button>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-box">
+    <h3>❓ FAQ</h3>
+    <div class="faq-item">
+      <div class="faq-q">Bagaimana cara pakai tool?</div>
+      <div class="faq-a">Buka tool yang diinginkan dari halaman Beranda atau Tools, ikuti instruksi di layar.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Apakah WenzZTools gratis?</div>
+      <div class="faq-a">Ya, 100% gratis. Semua tool bisa dipakai tanpa registrasi.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Kok ada tool yang error?</div>
+      <div class="faq-a">Coba refresh halaman. Kalau masih error, kirim laporan bug via form di atas.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Bisa request tool baru?</div>
+      <div class="faq-a">Bisa! Pilih "Saran Fitur" di form, ceritakan tool yang kamu mau.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CREDIT -->
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<!-- NAVIGATION BAWAH -->
+<nav class="liquid-nav liquid-nav-5">
+  <a class="nav-btn" href="index.html" data-index="0">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    <span>Home</span>
+  </a>
+
+  <a class="nav-btn" href="tools.html" data-index="1">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <span>Tools</span>
+  </a>
+
+  <a class="nav-btn nav-center active" href="admin.html" data-index="2">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M8 12l2 2 4-4"/>
+    </svg>
+    <span>Admin</span>
+  </a>
+
+  <a class="nav-btn" href="riwayat.html" data-index="3">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+    <span>Riwayat</span>
+  </a>
+
+  <a class="nav-btn" href="profil.html" data-index="4">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
+    </svg>
+    <span>Profil</span>
+  </a>
+</nav>
+
+<!-- TOAST -->
+<div class="toast-mini" id="toastMini"></div>
+
+<script>
+// Auto-sync tema dari homepage
+(function() {
+  const saved = localStorage.getItem('wenzz-theme');
+  if (saved) document.body.classList.add(saved);
+})();
+
+function showMini(msg) {
+  const t = document.getElementById('toastMini');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._miniTimer);
+  window._miniTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function kirimFeedback() {
+  const name = document.getElementById('feedbackName').value.trim() || 'Anonim';
+  const type = document.getElementById('feedbackType').value;
+  const msg = document.getElementById('feedbackMsg').value.trim();
+
+  if (!msg) {
+    showMini('⚠️ Tulis pesan dulu ya!');
+    return;
+  }
+
+  // Format pesan
+  const typeLabel = {
+    saran: '💡 Saran Fitur',
+    kritik: '📢 Kritik',
+    bug: '🐛 Laporan Bug',
+    pujian: '🙌 Pujian',
+    lainnya: '📌 Lainnya'
+  }[type];
+
+  const text = `*${typeLabel}*\n\n*Dari:* ${name}\n*Pesan:* ${msg}\n\n_— via WenzZTools_`;
+
+  // Buka WhatsApp dengan pesan terisi
+  const waNumber = '6282229257820'; // GANTI dengan nomor WA kamu
+  const waUrl = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(text);
+
+  // Simpan riwayat feedback
+  const history = JSON.parse(localStorage.getItem('wenzz-feedback') || '[]');
+  history.unshift({ name, type, msg, time: Date.now() });
+  localStorage.setItem('wenzz-feedback', JSON.stringify(history.slice(0, 50)));
+
+  // Buka WhatsApp
+  window.open(waUrl, '_blank');
+  
+  showMini('✅ Membuka WhatsApp...');
+
+  // Clear form
+  setTimeout(() => {
+    document.getElementById('feedbackMsg').value = '';
+    document.getElementById('feedbackName').value = '';
+  }, 1000);
+}
+
+// Nav active
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

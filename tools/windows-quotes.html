@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Windows Quotes - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field select, .field textarea { width: 100%; padding: 11px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field textarea { min-height: 70px; }
+
+.style-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.style-btn { padding: 10px 6px; background: var(--bg-secondary); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text-secondary); font-size: 11px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-align: center; }
+.style-btn.active { border-color: var(--accent); color: var(--accent); background: var(--bg-hover); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline { width: 100%; padding: 12px; background: transparent; color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 8px; font-family: inherit; }
+.btn-outline:hover { background: var(--bg-hover); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+.preview-canvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Windows Quotes</h1>
+      <p class="tool-sub">Quote random gaya Windows popup</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>💬 Quote Kamu</h3>
+    <div class="field">
+      <label>Quote (kosongin buat random)</label>
+      <textarea id="quoteText" maxlength="200" placeholder="Tulis quote sendiri... atau biarin kosong biar random"></textarea>
+    </div>
+    <div class="field">
+      <label>Judul Dialog</label>
+      <input type="text" id="dialogTitle" maxlength="40" value="Pesan Penting dari Semesta">
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🎨 Gaya Windows</h3>
+    <div class="style-row">
+      <div class="style-btn active" data-style="win10" onclick="pickStyle(this)">Win 10/11</div>
+      <div class="style-btn" data-style="winxp" onclick="pickStyle(this)">Win XP</div>
+      <div class="style-btn" data-style="error" onclick="pickStyle(this)">Error</div>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateWin()">🪟 Generate Quote</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="winCanvas" class="preview-canvas"></canvas>
+    <button class="btn-outline" onclick="downloadWin()">⬇️ Download PNG</button>
+    <button class="btn-outline" onclick="randomQuote()">🎲 Quote Random Lain</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+const quotes = [
+  "Hidup ini singkat, jangan lupa rebahan.",
+  "Kalau capek istirahat, bukan menyerah.",
+  "Jangan takut gagal, takutlah kalau nggak nyoba.",
+  "Kamu lebih kuat dari yang kamu pikir.",
+  "Cinta boleh, tapi jangan lupa makan.",
+  "Hari ini berat, besok pasti lebih ringan.",
+  "Kalau hidup ngasih lemon, bikin es lemon aja.",
+  "Belajar itu nggak pernah rugi.",
+  "Sedih boleh, tapi jangan lupa bahagia.",
+  "Mimpi itu gratis, yang mahal itu bangunnya.",
+  "Kalau bukan sekarang, kapan lagi?",
+  "Kesuksesan itu 1% inspirasi, 99% keringat.",
+  "Jangan bandingin dirimu sama orang lain.",
+  "Waktu itu lebih mahal dari uang.",
+  "Kalau mau sukses, mulai dari sekarang.",
+  "Kamu nggak harus sempurna, cukup jadi dirimu sendiri.",
+  "Istirahat bukan berarti berhenti.",
+  "Kegagalan itu guru terbaik.",
+  "Bahagia itu pilihan, bukan kebetulan.",
+  "Jangan tunggu motivasi, mulai aja dulu."
+];
+
+let selectedStyle = 'win10';
+
+function pickStyle(el) {
+  document.querySelectorAll('.style-btn').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  selectedStyle = el.dataset.style;
+}
+
+function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+  for (let n = 0; n < words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + ' ';
+    } else line = test;
+  }
+  lines.push(line.trim());
+  const startY = y - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+  return lines.length;
+}
+
+function generateWin() {
+  let quote = document.getElementById('quoteText').value.trim();
+  if (!quote) {
+    quote = quotes[Math.floor(Math.random() * quotes.length)];
+  }
+  const title = document.getElementById('dialogTitle').value.trim() || 'Pesan Penting';
+
+  const canvas = document.getElementById('winCanvas');
+  const W = 1000;
+  const H = 700;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background desktop gradient
+  if (selectedStyle === 'winxp') {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#3a7bd5');
+    grad.addColorStop(1, '#00d2ff');
+    ctx.fillStyle = grad;
+  } else if (selectedStyle === 'error') {
+    ctx.fillStyle = '#2d0a0a';
+  } else {
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#0a0e27');
+    grad.addColorStop(1, '#1a0033');
+    ctx.fillStyle = grad;
+  }
+  ctx.fillRect(0, 0, W, H);
+
+  // Desktop icons (decoration)
+  ctx.globalAlpha = 0.1;
+  ctx.fillStyle = '#fff';
+  ctx.font = '40px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('📁', 40, 80);
+  ctx.fillText('🖥️', 40, 160);
+  ctx.fillText('📄', 40, 240);
+  ctx.globalAlpha = 1;
+
+  // Dialog box position
+  const dialogW = 620;
+  const dialogH = 340;
+  const dX = (W - dialogW) / 2;
+  const dY = (H - dialogH) / 2;
+
+  // Drop shadow
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+  ctx.shadowBlur = 30;
+  ctx.shadowOffsetY = 10;
+
+  // Dialog bg
+  if (selectedStyle === 'winxp') {
+    ctx.fillStyle = '#ece9d8';
+  } else if (selectedStyle === 'error') {
+    ctx.fillStyle = '#1a0505';
+  } else {
+    ctx.fillStyle = '#202020';
+  }
+  ctx.fillRect(dX, dY, dialogW, dialogH);
+
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // Border
+  if (selectedStyle === 'winxp') {
+    ctx.strokeStyle = '#0054e3';
+  } else if (selectedStyle === 'error') {
+    ctx.strokeStyle = '#ef4444';
+  } else {
+    ctx.strokeStyle = '#3a3a3a';
+  }
+  ctx.lineWidth = 2;
+  ctx.strokeRect(dX, dY, dialogW, dialogH);
+
+  // Title bar
+  if (selectedStyle === 'winxp') {
+    const grad = ctx.createLinearGradient(dX, dY, dX, dY + 40);
+    grad.addColorStop(0, '#0058e6');
+    grad.addColorStop(1, '#3f9bff');
+    ctx.fillStyle = grad;
+  } else if (selectedStyle === 'error') {
+    ctx.fillStyle = '#7f1d1d';
+  } else {
+    ctx.fillStyle = '#2a2a2a';
+  }
+  ctx.fillRect(dX + 2, dY + 2, dialogW - 4, 44);
+
+  // Title text
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 16px "Segoe UI", Tahoma, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(title, dX + 16, dY + 24);
+
+  // Close button (X)
+  ctx.fillStyle = selectedStyle === 'winxp' ? '#d94b3d' : '#e81123';
+  ctx.fillRect(dX + dialogW - 42, dY + 4, 38, 36);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('×', dX + dialogW - 23, dY + 25);
+
+  // Icon dalam dialog
+  ctx.font = '64px sans-serif';
+  ctx.textAlign = 'center';
+  let icon = '💬';
+  if (selectedStyle === 'error') icon = '⚠️';
+  else if (selectedStyle === 'winxp') icon = 'ℹ️';
+  ctx.fillText(icon, dX + 80, dY + 140);
+
+  // Quote text
+  if (selectedStyle === 'winxp') ctx.fillStyle = '#000';
+  else if (selectedStyle === 'error') ctx.fillStyle = '#fca5a5';
+  else ctx.fillStyle = '#fff';
+
+  ctx.font = 'italic 22px "Segoe UI", Tahoma, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const maxW = dialogW - 200;
+  const lines = drawWrapped(ctx, '"' + quote + '"', dX + dialogW / 2 + 40, dY + 160, maxW, 32);
+
+  // Author line
+  ctx.fillStyle = selectedStyle === 'error' ? '#ef4444' : (selectedStyle === 'winxp' ? '#0058e6' : '#a0a0a0');
+  ctx.font = '14px "Segoe UI", Tahoma, sans-serif';
+  ctx.fillText('— WenzZTools', dX + dialogW / 2 + 40, dY + 160 + lines * 18 + 30);
+
+  // Buttons
+  const btnY = dY + dialogH - 60;
+  const btnW = 110;
+  const btnH = 36;
+
+  // Tombol OK
+  const okX = dX + dialogW - 130;
+  if (selectedStyle === 'winxp') {
+    const grad = ctx.createLinearGradient(okX, btnY, okX, btnY + btnH);
+    grad.addColorStop(0, '#f0f0f0');
+    grad.addColorStop(1, '#d0d0d0');
+    ctx.fillStyle = grad;
+    ctx.strokeStyle = '#0058e6';
+  } else if (selectedStyle === 'error') {
+    ctx.fillStyle = '#ef4444';
+    ctx.strokeStyle = '#ef4444';
+  } else {
+    ctx.fillStyle = '#3a3a3a';
+    ctx.strokeStyle = '#5a5a5a';
+  }
+  ctx.beginPath();
+  ctx.roundRect ? ctx.roundRect(okX, btnY, btnW, btnH, 6) : ctx.rect(okX, btnY, btnW, btnH);
+  ctx.fill();
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = selectedStyle === 'winxp' ? '#000' : '#fff';
+  ctx.font = 'bold 14px "Segoe UI", Tahoma, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('OK', okX + btnW / 2, btnY + btnH / 2);
+
+  // Watermark
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.font = '12px sans-serif';
+  ctx.fillText('WenzZTools • @WenzZDev', W / 2, H - 25);
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadWin() {
+  const canvas = document.getElementById('winCanvas');
+  const link = document.createElement('a');
+  link.download = 'windows-quote-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Quote ke-download!');
+}
+
+function randomQuote() {
+  const q = quotes[Math.floor(Math.random() * quotes.length)];
+  document.getElementById('quoteText').value = q;
+  generateWin();
+  showToast('🎲 Quote baru!');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

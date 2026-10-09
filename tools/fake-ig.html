@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fake IG - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.warning { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+.warning strong { color: #ef4444; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field textarea, .field select { width: 100%; padding: 10px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field textarea { min-height: 60px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+.posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.post-slot { aspect-ratio: 1; background: var(--bg-secondary); border: 1px dashed var(--border-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; font-size: 24px; color: var(--text-muted); }
+.post-slot:hover { border-color: var(--accent); color: var(--accent); }
+.post-slot.has-img { border-style: solid; }
+.post-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+#igCanvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Fake IG</h1>
+      <p class="tool-sub">Bikin tampilan profil Instagram</p>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ Peringatan:</strong> Tool ini buat <strong>prank / mockup design</strong>. Dilarang pakai buat nipu orang. Ada watermark WenzZTools di hasil akhir.
+  </div>
+
+  <div class="section">
+    <h3>👤 Info Profil</h3>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="igUser" placeholder="username" maxlength="30" value="wenzzdev">
+    </div>
+    <div class="field">
+      <label>Nama Lengkap</label>
+      <input type="text" id="igName" placeholder="Nama tampilan" maxlength="30" value="WenzZ Developer">
+    </div>
+    <div class="field">
+      <label>Bio</label>
+      <textarea id="igBio" placeholder="Bio kamu..." maxlength="150">Tools Gratis 🚀 | Developer WenzZTools</textarea>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📊 Statistik</h3>
+    <div class="field-row">
+      <div class="field">
+        <label>Posts</label>
+        <input type="text" id="igPosts" placeholder="100" maxlength="8" value="127">
+      </div>
+      <div class="field">
+        <label>Followers</label>
+        <input type="text" id="igFollowers" placeholder="1.2K" maxlength="10" value="12.5K">
+      </div>
+      <div class="field">
+        <label>Following</label>
+        <input type="text" id="igFollowing" placeholder="500" maxlength="10" value="342">
+      </div>
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label>Status Verifikasi</label>
+      <select id="igVerified">
+        <option value="0">Tidak ada centang</option>
+        <option value="1" selected>✓ Centang biru (verified)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📸 Post Grid (opsional)</h3>
+    <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Tap 1-9 kotak buat upload gambar post (nggak wajib).</p>
+    <div class="posts-grid" id="postsGrid"></div>
+  </div>
+
+  <button class="btn-main" onclick="generateIG()">📸 Generate Profil</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="igCanvas"></canvas>
+    <div class="action-row">
+      <button class="btn-action primary" onclick="downloadIG()">⬇️ Download PNG</button>
+      <button class="btn-action" onclick="resetIG()">🔄 Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<input type="file" id="postFileInput" style="display:none;" accept="image/*">
+<input type="file" id="avatarFileInput" style="display:none;" accept="image/*">
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+const postImages = [null, null, null, null, null, null, null, null, null];
+let avatarImage = null;
+let currentPostSlot = 0;
+
+// Bikin 9 slot post
+(function initPosts() {
+  const grid = document.getElementById('postsGrid');
+  for (let i = 0; i < 9; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'post-slot';
+    slot.dataset.idx = i;
+    slot.textContent = '+';
+    slot.onclick = () => {
+      currentPostSlot = i;
+      document.getElementById('postFileInput').click();
+    };
+    grid.appendChild(slot);
+  }
+})();
+
+document.getElementById('postFileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    postImages[currentPostSlot] = ev.target.result;
+    const slot = document.querySelectorAll('.post-slot')[currentPostSlot];
+    slot.innerHTML = '<img src="' + ev.target.result + '">';
+    slot.classList.add('has-img');
+  };
+  reader.readAsDataURL(file);
+});
+
+function drawRoundedImage(ctx, img, x, y, w, h, r) {
+  ctx.save();
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(x, y, w, h, r);
+  } else {
+    ctx.rect(x, y, w, h);
+  }
+  ctx.clip();
+  ctx.drawImage(img, x, y, w, h);
+  ctx.restore();
+}
+
+async function generateIG() {
+  const user = document.getElementById('igUser').value.trim() || 'username';
+  const name = document.getElementById('igName').value.trim() || 'Nama';
+  const bio = document.getElementById('igBio').value.trim();
+  const posts = document.getElementById('igPosts').value.trim() || '0';
+  const followers = document.getElementById('igFollowers').value.trim() || '0';
+  const following = document.getElementById('igFollowing').value.trim() || '0';
+  const verified = document.getElementById('igVerified').value === '1';
+
+  const canvas = document.getElementById('igCanvas');
+  const W = 720;
+  const H = 1280;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background — dark IG
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+
+  // Status bar (jam)
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 15px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('09:41', 20, 30);
+  ctx.textAlign = 'right';
+  ctx.fillText('87%  ▮▮▮  📶', W - 20, 30);
+
+  // Header (username + ikon)
+  let y = 70;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.fillText(user + (verified ? ' ' : ''), 20, y);
+
+  // Verified badge
+  if (verified) {
+    const userW = ctx.measureText(user).width;
+    const bx = 20 + userW + 8;
+    ctx.beginPath();
+    ctx.arc(bx + 8, y, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#0095f6';
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✓', bx + 8, y + 1);
+  }
+
+  // Ikon kanan header
+  ctx.fillStyle = '#fff';
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('⋯  ☰', W - 20, y);
+
+  // Avatar + stats
+  y = 140;
+  const avatarR = 50;
+  const avatarX = 90;
+  const avatarY = y + 25;
+
+  // Avatar circle
+  ctx.beginPath();
+  ctx.arc(avatarX, avatarY, avatarR, 0, Math.PI * 2);
+  if (avatarImage) {
+    ctx.save();
+    ctx.clip();
+    ctx.drawImage(avatarImage, avatarX - avatarR, avatarY - avatarR, avatarR * 2, avatarR * 2);
+    ctx.restore();
+  } else {
+    ctx.fillStyle = '#262626';
+    ctx.fill();
+    ctx.fillStyle = '#8e8e8e';
+    ctx.font = 'bold 40px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(user.charAt(0).toUpperCase(), avatarX, avatarY);
+  }
+
+  // Ring avatar
+  ctx.beginPath();
+  ctx.arc(avatarX, avatarY, avatarR + 3, 0, Math.PI * 2);
+  ctx.strokeStyle = '#8e8e8e';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Stats
+  const statX = [180, 320, 460];
+  const statY = avatarY - 10;
+  const stats = [
+    { num: posts, label: 'Posts' },
+    { num: followers, label: 'Followers' },
+    { num: following, label: 'Following' }
+  ];
+
+  stats.forEach((s, i) => {
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.num, statX[i] + 50, statY);
+
+    ctx.fillStyle = '#8e8e8e';
+    ctx.font = '14px sans-serif';
+    ctx.fillText(s.label, statX[i] + 50, statY + 26);
+  });
+
+  // Nama lengkap
+  y = 230;
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 15px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name, 30, y);
+
+  // Bio
+  if (bio) {
+    y = 260;
+    ctx.fillStyle = '#8e8e8e';
+    ctx.font = '14px sans-serif';
+    const bioLines = bio.split('\n');
+    bioLines.forEach((line, i) => {
+      if (y + i * 20 < 350) {
+        ctx.fillText(line, 30, y + i * 20);
+      }
+    });
+  }
+
+  // Tombol Follow + Message
+  y = 350;
+  const btnW = (W - 80) / 2;
+
+  ctx.fillStyle = '#0095f6';
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(30, y, btnW, 38, 8);
+  } else {
+    ctx.rect(30, y, btnW, 38);
+  }
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Following', 30 + btnW / 2, y + 20);
+
+  ctx.fillStyle = '#262626';
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(30 + btnW + 20, y, btnW, 38, 8);
+  } else {
+    ctx.rect(30 + btnW + 20, y, btnW, 38);
+  }
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.fillText('Message', 30 + btnW + 20 + btnW / 2, y + 20);
+
+  // Tab (Posts, Reels, Tagged)
+  y = 420;
+  const tabW = W / 3;
+  const tabs = ['▦ POSTS', '▶ REELS', '👤 TAGGED'];
+  tabs.forEach((t, i) => {
+    ctx.fillStyle = i === 0 ? '#fff' : '#8e8e8e';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(t, tabW * i + tabW / 2, y);
+  });
+
+  // Garis bawah tab aktif
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, y + 15);
+  ctx.lineTo(tabW, y + 15);
+  ctx.stroke();
+
+  // Post grid (3x3)
+  const gridY = 460;
+  const gridSize = W / 3;
+  const gap = 2;
+
+  for (let i = 0; i < 9; i++) {
+    const col = i % 3;
+    const row = Math.floor(i / 3);
+    const x = col * gridSize;
+    const gy = gridY + row * gridSize;
+
+    if (postImages[i]) {
+      const img = new Image();
+      img.src = postImages[i];
+      await new Promise(res => { img.onload = res; img.onerror = res; });
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x + gap, gy + gap, gridSize - gap * 2, gridSize - gap * 2);
+      ctx.clip();
+      ctx.drawImage(img, x + gap, gy + gap, gridSize - gap * 2, gridSize - gap * 2);
+      ctx.restore();
+    } else {
+      // Placeholder abu-abu
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(x + gap, gy + gap, gridSize - gap * 2, gridSize - gap * 2);
+      ctx.fillStyle = '#333';
+      ctx.font = '30px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('▦', x + gridSize / 2, gy + gridSize / 2);
+    }
+  }
+
+  // Watermark
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Dibuat dengan WenzZTools • @WenzZDev', W / 2, H - 15);
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadIG() {
+  const canvas = document.getElementById('igCanvas');
+  const link = document.createElement('a');
+  link.download = 'fake-ig-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Screenshot ke-download!');
+}
+
+function resetIG() {
+  document.getElementById('igUser').value = 'wenzzdev';
+  document.getElementById('igName').value = 'WenzZ Developer';
+  document.getElementById('igBio').value = 'Tools Gratis 🚀 | Developer WenzZTools';
+  document.getElementById('igPosts').value = '127';
+  document.getElementById('igFollowers').value = '12.5K';
+  document.getElementById('igFollowing').value = '342';
+  document.getElementById('igVerified').value = '1';
+
+  // Reset post images
+  for (let i = 0; i < 9; i++) {
+    postImages[i] = null;
+    const slot = document.querySelectorAll('.post-slot')[i];
+    slot.innerHTML = '+';
+    slot.classList.remove('has-img');
+  }
+  avatarImage = null;
+
+  document.getElementById('previewWrap').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

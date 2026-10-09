@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CV Builder - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.form-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; }
+.form-section h3 { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.form-row { margin-bottom: 10px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-row label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+.form-row input, .form-row textarea { width: 100%; padding: 10px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); resize: vertical; }
+.form-row input:focus, .form-row textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+.add-btn { padding: 6px 12px; background: transparent; border: 1px solid var(--border-light); border-radius: 8px; color: var(--accent); font-size: 11px; font-weight: 600; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.add-btn:hover { background: var(--bg-hover); }
+
+.entry-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; position: relative; }
+.remove-btn { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: transparent; border: 1px solid #ef4444; color: #ef4444; border-radius: 6px; font-size: 14px; line-height: 1; cursor: pointer; padding: 0; }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.action-btn { padding: 13px 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 5px; text-align: center; }
+.action-btn.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+.action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.action-btn:active { transform: translateY(0); }
+
+.cv-preview { background: #fff; color: #1a1a1a; padding: 24px; border-radius: var(--radius); font-family: 'Georgia', serif; line-height: 1.5; margin-bottom: 16px; display: none; }
+.cv-preview.show { display: block; }
+.cv-name { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+.cv-role { font-size: 13px; color: #666; margin-bottom: 12px; }
+.cv-contact { font-size: 11px; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 12px; margin-bottom: 16px; }
+.cv-section { margin-bottom: 16px; }
+.cv-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #333; border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 8px; }
+.cv-item { margin-bottom: 10px; }
+.cv-item-title { font-size: 13px; font-weight: 700; }
+.cv-item-sub { font-size: 11px; color: #666; font-style: italic; }
+.cv-item-desc { font-size: 12px; margin-top: 3px; color: #333; }
+
+.toast-mini {
+  position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 10px;
+  font-size: 13px; opacity: 0; transition: all 0.3s; z-index: 9999;
+  border: 1px solid #333; pointer-events: none;
+}
+.toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media print {
+  body * { visibility: hidden; }
+  .cv-preview, .cv-preview * { visibility: visible; }
+  .cv-preview { position: absolute; top: 0; left: 0; width: 100%; padding: 20mm; }
+}
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../index.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">CV Builder</h1>
+      <p class="tool-sub">Bikin CV profesional cepat</p>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Data Diri</h3>
+    <div class="form-row"><label>Nama Lengkap</label><input type="text" id="cvName" placeholder="Ahmad WenzZ" oninput="previewCV()"></div>
+    <div class="form-row"><label>Posisi / Role</label><input type="text" id="cvRole" placeholder="Full Stack Developer" oninput="previewCV()"></div>
+    <div class="form-row"><label>Email</label><input type="email" id="cvEmail" placeholder="email@example.com" oninput="previewCV()"></div>
+    <div class="form-row"><label>Telepon</label><input type="tel" id="cvPhone" placeholder="+62 812-3456-7890" oninput="previewCV()"></div>
+    <div class="form-row"><label>Alamat</label><input type="text" id="cvAddress" placeholder="Jakarta, Indonesia" oninput="previewCV()"></div>
+  </div>
+
+  <div class="form-section">
+    <h3>Ringkasan</h3>
+    <div class="form-row"><textarea id="cvSummary" rows="3" placeholder="Ceritakan singkat tentang kamu..." oninput="previewCV()"></textarea></div>
+  </div>
+
+  <div class="form-section">
+    <h3>Pengalaman Kerja <button class="add-btn" onclick="addExp()">+ Tambah</button></h3>
+    <div id="expList"></div>
+  </div>
+
+  <div class="form-section">
+    <h3>Pendidikan <button class="add-btn" onclick="addEdu()">+ Tambah</button></h3>
+    <div id="eduList"></div>
+  </div>
+
+  <div class="form-section">
+    <h3>Skills</h3>
+    <div class="form-row"><input type="text" id="cvSkills" placeholder="JavaScript, Python, React, dll" oninput="previewCV()"></div>
+  </div>
+
+  <div class="action-row">
+    <button class="action-btn primary" onclick="generateCV()">👁️ Lihat CV</button>
+    <button class="action-btn" onclick="printCV()">🖨️ Print PDF</button>
+  </div>
+  <div class="action-row">
+    <button class="action-btn" onclick="saveCV()">💾 Simpan</button>
+    <button class="action-btn" onclick="exportCV()">📤 Export</button>
+  </div>
+  <div class="action-row">
+    <button class="action-btn" onclick="importCV()">📥 Import</button>
+    <button class="action-btn" onclick="downloadCVHTML()">📄 Download HTML</button>
+  </div>
+  <div class="action-row">
+    <button class="action-btn" onclick="copyCVText()">📋 Copy Text</button>
+    <button class="action-btn" onclick="resetCV()">🔄 Reset</button>
+  </div>
+
+  <div class="cv-preview" id="cvPreview"></div>
+
+</div>
+
+<div class="toast-mini" id="toastMini"></div>
+
+<script>
+let expCount = 0;
+let eduCount = 0;
+
+function showMini(msg) {
+  const t = document.getElementById('toastMini');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._miniTimer);
+  window._miniTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function addExp(data) {
+  expCount++;
+  const id = 'exp' + expCount;
+  const html = `
+    <div class="entry-block" id="${id}">
+      <button class="remove-btn" onclick="removeBlock('${id}')">×</button>
+      <div class="form-row"><label>Posisi</label><input type="text" class="exp-title" placeholder="Software Engineer" value="${(data && data.title) || ''}" oninput="previewCV()"></div>
+      <div class="form-row"><label>Perusahaan</label><input type="text" class="exp-company" placeholder="PT ABC" value="${(data && data.company) || ''}" oninput="previewCV()"></div>
+      <div class="form-row"><label>Periode</label><input type="text" class="exp-period" placeholder="2020 - 2023" value="${(data && data.period) || ''}" oninput="previewCV()"></div>
+      <div class="form-row"><label>Deskripsi</label><textarea class="exp-desc" rows="2" placeholder="Job desc..." oninput="previewCV()">${(data && data.desc) || ''}</textarea></div>
+    </div>
+  `;
+  document.getElementById('expList').insertAdjacentHTML('beforeend', html);
+}
+
+function addEdu(data) {
+  eduCount++;
+  const id = 'edu' + eduCount;
+  const html = `
+    <div class="entry-block" id="${id}">
+      <button class="remove-btn" onclick="removeBlock('${id}')">×</button>
+      <div class="form-row"><label>Jenjang / Jurusan</label><input type="text" class="edu-title" placeholder="S1 Teknik Informatika" value="${(data && data.title) || ''}" oninput="previewCV()"></div>
+      <div class="form-row"><label>Institusi</label><input type="text" class="edu-school" placeholder="Universitas XYZ" value="${(data && data.school) || ''}" oninput="previewCV()"></div>
+      <div class="form-row"><label>Tahun</label><input type="text" class="edu-period" placeholder="2016 - 2020" value="${(data && data.period) || ''}" oninput="previewCV()"></div>
+    </div>
+  `;
+  document.getElementById('eduList').insertAdjacentHTML('beforeend', html);
+}
+
+function removeBlock(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  previewCV();
+}
+
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function previewCV() {
+  const name = document.getElementById('cvName').value || 'Nama Kamu';
+  const role = document.getElementById('cvRole').value || 'Posisi';
+  const email = document.getElementById('cvEmail').value;
+  const phone = document.getElementById('cvPhone').value;
+  const address = document.getElementById('cvAddress').value;
+  const summary = document.getElementById('cvSummary').value;
+  const skills = document.getElementById('cvSkills').value;
+  const contacts = [email, phone, address].filter(Boolean).join(' • ');
+
+  let html = '<div class="cv-name">' + esc(name) + '</div>';
+  html += '<div class="cv-role">' + esc(role) + '</div>';
+  if (contacts) html += '<div class="cv-contact">' + esc(contacts) + '</div>';
+
+  if (summary) {
+    html += '<div class="cv-section"><div class="cv-section-title">Ringkasan</div>';
+    html += '<div class="cv-item-desc">' + esc(summary) + '</div></div>';
+  }
+
+  const expBlocks = document.querySelectorAll('#expList .entry-block');
+  if (expBlocks.length > 0) {
+    html += '<div class="cv-section"><div class="cv-section-title">Pengalaman Kerja</div>';
+    expBlocks.forEach(b => {
+      const t = b.querySelector('.exp-title').value;
+      const c = b.querySelector('.exp-company').value;
+      const p = b.querySelector('.exp-period').value;
+      const d = b.querySelector('.exp-desc').value;
+      if (t || c) {
+        html += '<div class="cv-item"><div class="cv-item-title">' + esc(t || '-') + '</div>';
+        html += '<div class="cv-item-sub">' + esc(c) + (p ? ' • ' + esc(p) : '') + '</div>';
+        if (d) html += '<div class="cv-item-desc">' + esc(d) + '</div></div>';
+      }
+    });
+    html += '</div>';
+  }
+
+  const eduBlocks = document.querySelectorAll('#eduList .entry-block');
+  if (eduBlocks.length > 0) {
+    html += '<div class="cv-section"><div class="cv-section-title">Pendidikan</div>';
+    eduBlocks.forEach(b => {
+      const t = b.querySelector('.edu-title').value;
+      const s = b.querySelector('.edu-school').value;
+      const p = b.querySelector('.edu-period').value;
+      if (t || s) {
+        html += '<div class="cv-item"><div class="cv-item-title">' + esc(t || '-') + '</div>';
+        html += '<div class="cv-item-sub">' + esc(s) + (p ? ' • ' + esc(p) : '') + '</div></div>';
+      }
+    });
+    html += '</div>';
+  }
+
+  if (skills) {
+    html += '<div class="cv-section"><div class="cv-section-title">Skills</div>';
+    html += '<div class="cv-item-desc">' + esc(skills) + '</div></div>';
+  }
+
+  document.getElementById('cvPreview').innerHTML = html;
+}
+
+function generateCV() {
+  previewCV();
+  document.getElementById('cvPreview').classList.add('show');
+  document.getElementById('cvPreview').scrollIntoView({ behavior: 'smooth' });
+}
+
+function printCV() {
+  previewCV();
+  document.getElementById('cvPreview').classList.add('show');
+  setTimeout(() => {
+    try {
+      window.print();
+    } catch (err) {
+      showMini('❌ Print nggak didukung di preview ini. Buka di Chrome HP.');
+    }
+  }, 300);
+}
+
+function collectData() {
+  const data = {
+    name: document.getElementById('cvName').value,
+    role: document.getElementById('cvRole').value,
+    email: document.getElementById('cvEmail').value,
+    phone: document.getElementById('cvPhone').value,
+    address: document.getElementById('cvAddress').value,
+    summary: document.getElementById('cvSummary').value,
+    skills: document.getElementById('cvSkills').value,
+    exp: [], edu: []
+  };
+  document.querySelectorAll('#expList .entry-block').forEach(b => {
+    data.exp.push({
+      title: b.querySelector('.exp-title').value,
+      company: b.querySelector('.exp-company').value,
+      period: b.querySelector('.exp-period').value,
+      desc: b.querySelector('.exp-desc').value
+    });
+  });
+  document.querySelectorAll('#eduList .entry-block').forEach(b => {
+    data.edu.push({
+      title: b.querySelector('.edu-title').value,
+      school: b.querySelector('.edu-school').value,
+      period: b.querySelector('.edu-period').value
+    });
+  });
+  return data;
+}
+
+function saveCV() {
+  const data = collectData();
+  localStorage.setItem('wenzz-cv', JSON.stringify(data));
+  showMini('✅ CV tersimpan di browser!');
+}
+
+function exportCV() {
+  const saved = localStorage.getItem('wenzz-cv');
+  if (!saved) {
+    showMini('⚠️ Belum ada data. Klik Simpan dulu.');
+    return;
+  }
+  const data = JSON.parse(saved);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cv-' + (data.name || 'wenzz').replace(/\s+/g, '-') + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showMini('📤 File JSON ke-download!');
+}
+
+function importCV() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        localStorage.setItem('wenzz-cv', JSON.stringify(data));
+        showMini('✅ Import berhasil! Reload...');
+        setTimeout(() => location.reload(), 800);
+      } catch (err) {
+        showMini('❌ File JSON rusak.');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function downloadCVHTML() {
+  previewCV();
+  const content = document.getElementById('cvPreview').innerHTML;
+  const fullHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CV</title>' +
+    '<style>body{font-family:Georgia,serif;padding:40px;max-width:800px;margin:auto;line-height:1.5;}' +
+    '.cv-name{font-size:28px;font-weight:700;margin-bottom:6px;}' +
+    '.cv-role{font-size:14px;color:#666;margin-bottom:14px;}' +
+    '.cv-contact{font-size:12px;color:#444;border-bottom:1px solid #ddd;padding-bottom:12px;margin-bottom:20px;}' +
+    '.cv-section{margin-bottom:20px;}' +
+    '.cv-section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid #333;padding-bottom:4px;margin-bottom:10px;}' +
+    '.cv-item{margin-bottom:12px;}.cv-item-title{font-size:14px;font-weight:700;}' +
+    '.cv-item-sub{font-size:12px;color:#666;font-style:italic;}' +
+    '.cv-item-desc{font-size:13px;margin-top:4px;color:#333;}</style></head><body>' +
+    content + '</body></html>';
+  
+  const blob = new Blob([fullHTML], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const nm = document.getElementById('cvName').value || 'wenzz';
+  a.href = url;
+  a.download = 'cv-' + nm.replace(/\s+/g, '-') + '.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showMini('📄 File HTML CV ke-download!');
+}
+
+function copyCVText() {
+  previewCV();
+  const el = document.getElementById('cvPreview');
+  const text = el.innerText || el.textContent || '';
+  if (!text.trim()) {
+    showMini('⚠️ Isi CV dulu!');
+    return;
+  }
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showMini('📋 CV ke-copy!')).catch(() => fallbackCopyText(text));
+  } else {
+    fallbackCopyText(text);
+  }
+}
+
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    showMini(ok ? '📋 CV ke-copy!' : '❌ Gagal copy');
+  } catch (err) {
+    document.body.removeChild(ta);
+    showMini('❌ Gagal copy');
+  }
+}
+
+function loadCV() {
+  const saved = localStorage.getItem('wenzz-cv');
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    document.getElementById('cvName').value = data.name || '';
+    document.getElementById('cvRole').value = data.role || '';
+    document.getElementById('cvEmail').value = data.email || '';
+    document.getElementById('cvPhone').value = data.phone || '';
+    document.getElementById('cvAddress').value = data.address || '';
+    document.getElementById('cvSummary').value = data.summary || '';
+    document.getElementById('cvSkills').value = data.skills || '';
+    (data.exp || []).forEach(e => addExp(e));
+    (data.edu || []).forEach(e => addEdu(e));
+    previewCV();
+  } catch (e) {}
+}
+
+function resetCV() {
+  if (!confirm('Yakin reset semua data CV?')) return;
+  localStorage.removeItem('wenzz-cv');
+  document.querySelectorAll('.tool-page input, .tool-page textarea').forEach(el => el.value = '');
+  document.getElementById('expList').innerHTML = '';
+  document.getElementById('eduList').innerHTML = '';
+  document.getElementById('cvPreview').classList.remove('show');
+  expCount = 0;
+  eduCount = 0;
+  addExp();
+  addEdu();
+}
+
+window.addEventListener('load', () => {
+  loadCV();
+  if (!document.querySelector('#expList .entry-block')) addExp();
+  if (!document.querySelector('#eduList .entry-block')) addEdu();
+});
+</script>
+<div class="wenzz-credit">© 2026 WenzZTools • by <span>@WenzZ</span></div>
+<script>
+  // Auto-sync tema dari homepage
+  (function() {
+    const saved = localStorage.getItem('wenzz-theme');
+    if (saved) {
+      document.body.classList.add(saved);
+    }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Login - WenzZTools</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-bg {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 30%, var(--accent) 0%, transparent 25%),
+    radial-gradient(circle at 80% 70%, var(--accent) 0%, transparent 25%),
+    radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 30%);
+  opacity: 0.08;
+  animation: loginOrb 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes loginOrb {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(5%, -5%) rotate(120deg); }
+  66% { transform: translate(-5%, 5%) rotate(240deg); }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px 24px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: cardIn 0.5s ease;
+  box-sizing: border-box;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  border-radius: 24px 24px 0 0;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.login-logo-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: var(--glow);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+.login-logo h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.login-logo h1 span {
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+.login-tagline {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+/* TAB BAR */
+.tab-bar {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.tab-btn.active {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+.login-field {
+  margin-bottom: 14px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.login-field input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.login-field input::placeholder {
+  color: var(--text-muted);
+}
+
+.pw-wrap {
+  position: relative;
+}
+
+.pw-wrap input {
+  padding-right: 46px;
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 6px;
+  font-family: inherit;
+}
+
+.login-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.switch-text {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+.switch-text a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-footer {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+.login-footer span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.toast-login {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  max-width: 340px;
+  text-align: center;
+}
+
+.toast-login.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-login.success { border-color: #10b981; }
+.toast-login.error { border-color: #ef4444; }
+</style>
+</head>
+<body>
+
+<div class="login-bg"></div>
+
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div class="login-logo-dot"></div>
+      <h1>WenzZ<span>Tools</span></h1>
+    </div>
+
+    <p class="login-tagline">WenzZtools siap dipakai.<br>Login atau daftar dulu ya.</p>
+
+    <!-- TAB -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">🔑 Login</button>
+      <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">📝 Daftar</button>
+    </div>
+
+    <!-- FORM LOGIN -->
+    <div id="formLogin">
+      <div class="login-field">
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" placeholder="Username kamu..." maxlength="20" autocomplete="off">
+      </div>
+      <div class="login-field">
+        <label for="loginPass">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPass" placeholder="Password kamu..." autocomplete="off">
+          <button class="pw-toggle" onclick="togglePw('loginPass', this)">👁️</button>
+        </div>
+      </div>
+      <button class="login-btn" onclick="doLogin()">🚀 Masuk</button>
+      <p class="switch-text">Belum punya akun? <a onclick="switchTab('register')">Daftar di sini</a></p>
+    </div>
+
+    <!-- FORM REGISTER -->
+    <div id="formRegister" class="hidden">
+      <div class="login-field">
+        <label for="regUser">Username</label>
+        <input type="text" id="regUser" placeholder="Pilih username..." maxlength="20" autocomplete="off">
+      </div>
+      <div class="login-field">
+        <label for="regPass">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="regPass" placeholder="Minimal 4 karakter..." autocomplete="off">
+          <button class="pw-toggle" onclick="togglePw('regPass', this)">👁️</button>
+        </div>
+      </div>
+      <div class="login-field">
+        <label for="regPass2">Konfirmasi Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="regPass2" placeholder="Ulangi password..." autocomplete="off">
+          <button class="pw-toggle" onclick="togglePw('regPass2', this)">👁️</button>
+        </div>
+      </div>
+      <button class="login-btn" onclick="doRegister()">✨ Daftar Sekarang</button>
+      <p class="switch-text">Udah punya akun? <a onclick="switchTab('login')">Login di sini</a></p>
+    </div>
+
+    <div class="login-footer">
+      © 2025 WenzZTools • by <span>@WenzZDev</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-login" id="toastLogin"></div>
+
+<script>
+// Kalau udah login → langsung ke loading
+if (localStorage.getItem('wenzz-logged-in') === 'true') {
+  window.location.replace('loading.html');
+}
+// ============================
+// AUTO-LOAD TEMA SAJA (nggak ada auto-skip)
+// ============================
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+// ============================
+// TOAST
+// ============================
+function showToast(msg, type) {
+  const t = document.getElementById('toastLogin');
+  t.textContent = msg;
+  t.className = 'toast-login show ' + (type || '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.className = 'toast-login', 2500);
+}
+
+// ============================
+// SWITCH TAB
+// ============================
+function switchTab(tab) {
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const formLogin = document.getElementById('formLogin');
+  const formRegister = document.getElementById('formRegister');
+
+  if (tab === 'login') {
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
+    formLogin.classList.remove('hidden');
+    formRegister.classList.add('hidden');
+    setTimeout(() => document.getElementById('loginUser').focus(), 100);
+  } else {
+    tabRegister.classList.add('active');
+    tabLogin.classList.remove('active');
+    formRegister.classList.remove('hidden');
+    formLogin.classList.add('hidden');
+    setTimeout(() => document.getElementById('regUser').focus(), 100);
+  }
+}
+
+// ============================
+// TOGGLE PASSWORD
+// ============================
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+}
+
+// ============================
+// LOGIN
+// ============================
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+
+  if (!username) { showToast('⚠️ Username belum diisi', 'error'); return; }
+  if (!password) { showToast('⚠️ Password belum diisi', 'error'); return; }
+
+  const users = JSON.parse(localStorage.getItem('wenzz-users') || '{}');
+  const user = users[username.toLowerCase()];
+
+  if (!user) {
+    showToast('❌ Username belum terdaftar', 'error');
+    return;
+  }
+
+  if (user.password !== btoa(password)) {
+    showToast('❌ Password salah', 'error');
+    return;
+  }
+
+  localStorage.setItem('wenzz-username', username);
+  localStorage.setItem('wenzz-role', 'MEMBER');
+  localStorage.setItem('wenzz-logged-in', 'true');
+  if (!localStorage.getItem('wenzz-joined')) {
+    localStorage.setItem('wenzz-joined', Date.now().toString());
+  }
+
+  showToast('✅ Login berhasil!', 'success');
+  setTimeout(() => window.location.href = 'loading.html', 800);
+}
+
+// ============================
+// REGISTER
+// ============================
+function doRegister() {
+  const username = document.getElementById('regUser').value.trim();
+  const password = document.getElementById('regPass').value;
+  const password2 = document.getElementById('regPass2').value;
+
+  if (!username) { showToast('⚠️ Username belum diisi', 'error'); return; }
+  if (username.length < 3) { showToast('⚠️ Username minimal 3 karakter', 'error'); return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    showToast('⚠️ Cuma huruf, angka, underscore', 'error');
+    return;
+  }
+  if (!password) { showToast('⚠️ Password belum diisi', 'error'); return; }
+  if (password.length < 4) { showToast('⚠️ Password minimal 4 karakter', 'error'); return; }
+  if (password !== password2) { showToast('⚠️ Password nggak sama', 'error'); return; }
+
+  const users = JSON.parse(localStorage.getItem('wenzz-users') || '{}');
+  if (users[username.toLowerCase()]) {
+    showToast('⚠️ Username udah dipakai', 'error');
+    return;
+  }
+
+  users[username.toLowerCase()] = {
+    username: username,
+    password: btoa(password),
+    role: 'MEMBER',
+    joined: Date.now()
+  };
+  localStorage.setItem('wenzz-users', JSON.stringify(users));
+
+  showToast('🎉 Daftar berhasil!', 'success');
+
+  setTimeout(() => {
+    switchTab('login');
+    document.getElementById('loginUser').value = username;
+    document.getElementById('loginPass').focus();
+  }, 1200);
+}
+
+// ============================
+// ENTER = NEXT / SUBMIT
+// ============================
+document.getElementById('loginUser').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginPass').focus();
+});
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('regUser').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('regPass').focus();
+});
+document.getElementById('regPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('regPass2').focus();
+});
+document.getElementById('regPass2').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doRegister();
+});
+
+// Auto-focus
+setTimeout(() => document.getElementById('loginUser').focus(), 200);
+</script>
+
+</body>
+</html>

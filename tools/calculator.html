@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Calculator - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 120px;
+}
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.calc-display {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: right;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.calc-history {
+  font-size: 13px;
+  color: var(--text-muted);
+  min-height: 18px;
+  word-break: break-all;
+  margin-bottom: 6px;
+}
+.calc-current {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-all;
+  line-height: 1.1;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.calc-btn {
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.calc-btn:hover,
+.calc-btn:active {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+  transform: scale(0.96);
+}
+.calc-btn.op {
+  color: var(--accent);
+  font-weight: 700;
+}
+.calc-btn.clear {
+  color: #ef4444;
+}
+.calc-btn.equal {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border-color: var(--accent);
+  grid-column: span 1;
+}
+.calc-btn.equal:hover {
+  opacity: 0.9;
+}
+.calc-btn.zero {
+  grid-column: span 2;
+  aspect-ratio: auto;
+}
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../index.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Calculator</h1>
+      <p class="tool-sub">Hitung cepat & akurat</p>
+    </div>
+  </div>
+
+  <div class="calc-display">
+    <div class="calc-history" id="calcHistory"></div>
+    <div class="calc-current" id="calcCurrent">0</div>
+  </div>
+
+  <div class="calc-grid">
+    <button class="calc-btn clear" onclick="calcClear()">AC</button>
+    <button class="calc-btn clear" onclick="calcDel()">⌫</button>
+    <button class="calc-btn op" onclick="calcOp('%')">%</button>
+    <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+
+    <button class="calc-btn" onclick="calcNum('7')">7</button>
+    <button class="calc-btn" onclick="calcNum('8')">8</button>
+    <button class="calc-btn" onclick="calcNum('9')">9</button>
+    <button class="calc-btn op" onclick="calcOp('*')">×</button>
+
+    <button class="calc-btn" onclick="calcNum('4')">4</button>
+    <button class="calc-btn" onclick="calcNum('5')">5</button>
+    <button class="calc-btn" onclick="calcNum('6')">6</button>
+    <button class="calc-btn op" onclick="calcOp('-')">−</button>
+
+    <button class="calc-btn" onclick="calcNum('1')">1</button>
+    <button class="calc-btn" onclick="calcNum('2')">2</button>
+    <button class="calc-btn" onclick="calcNum('3')">3</button>
+    <button class="calc-btn op" onclick="calcOp('+')">+</button>
+
+    <button class="calc-btn zero" onclick="calcNum('0')">0</button>
+    <button class="calc-btn" onclick="calcNum('.')">.</button>
+    <button class="calc-btn equal" onclick="calcEqual()">=</button>
+  </div>
+
+</div>
+
+<script>
+let current = '0';
+let history = '';
+let shouldReset = false;
+
+function updateDisplay() {
+  document.getElementById('calcCurrent').textContent = current;
+  document.getElementById('calcHistory').textContent = history;
+}
+
+function calcNum(n) {
+  if (shouldReset) {
+    current = '0';
+    shouldReset = false;
+  }
+  if (n === '.') {
+    if (current.includes('.')) return;
+    current += '.';
+  } else {
+    if (current === '0') current = n;
+    else current += n;
+  }
+  updateDisplay();
+}
+
+function calcOp(op) {
+  shouldReset = false;
+  const opDisplay = op === '*' ? '×' : op === '/' ? '÷' : op;
+  history = current + ' ' + opDisplay + ' ';
+  current = '0';
+  updateDisplay();
+  window._lastOp = op;
+  window._lastNum = parseFloat(history);
+}
+
+function calcEqual() {
+  if (!window._lastOp) return;
+  const a = window._lastNum;
+  const b = parseFloat(current);
+  let result = 0;
+  
+  switch (window._lastOp) {
+    case '+': result = a + b; break;
+    case '-': result = a - b; break;
+    case '*': result = a * b; break;
+    case '/': result = b === 0 ? 'Error' : a / b; break;
+    case '%': result = a % b; break;
+  }
+  
+  const opDisplay = window._lastOp === '*' ? '×' : window._lastOp === '/' ? '÷' : window._lastOp;
+history = a + ' ' + opDisplay + ' ' + b + ' =';
+  current = String(result);
+  window._lastOp = null;
+  window._lastNum = null;
+  shouldReset = true;
+  updateDisplay();
+}
+
+function calcClear() {
+  current = '0';
+  history = '';
+  window._lastOp = null;
+  window._lastNum = null;
+  shouldReset = false;
+  updateDisplay();
+}
+
+function calcDel() {
+  if (current.length <= 1) {
+    current = '0';
+  } else {
+    current = current.slice(0, -1);
+  }
+  updateDisplay();
+}
+
+// Keyboard support
+document.addEventListener('keydown', function(e) {
+  if (e.key >= '0' && e.key <= '9') calcNum(e.key);
+  else if (e.key === '.') calcNum('.');
+  else if (['+','-','*','/','%'].includes(e.key)) calcOp(e.key);
+  else if (e.key === 'Enter' || e.key === '=') calcEqual();
+  else if (e.key === 'Backspace') calcDel();
+  else if (e.key === 'Escape') calcClear();
+});
+
+updateDisplay();
+</script>
+<div class="wenzz-credit">© 2026 WenzZTools • by <span>@WenzZ</span></div>
+<script>
+  // Auto-sync tema dari homepage
+  (function() {
+    const saved = localStorage.getItem('wenzz-theme');
+    if (saved) {
+      document.body.classList.add(saved);
+    }
+  })();
+</script>
+</body>
+</html>

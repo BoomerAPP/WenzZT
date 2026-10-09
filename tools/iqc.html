@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IQC Generator - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field textarea, .field select { width: 100%; padding: 11px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field textarea { min-height: 70px; }
+
+.template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tpl-option { aspect-ratio: 1; border-radius: 10px; border: 2px solid var(--border); cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+.tpl-option:hover { transform: scale(1.05); }
+.tpl-option.active { border-color: var(--accent); box-shadow: 0 0 12px var(--accent); }
+.tpl-option.active::after { content: '✓'; position: absolute; top: 4px; right: 4px; background: var(--accent); color: var(--bg-primary); width: 18px; height: 18px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+.tpl-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.tpl-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.tpl-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.tpl-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.tpl-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.tpl-6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+.tpl-7 { background: #1a1a1a; }
+.tpl-8 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+.tpl-9 { background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline { width: 100%; padding: 12px; background: transparent; color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 8px; font-family: inherit; }
+.btn-outline:hover { background: var(--bg-hover); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+.preview-canvas { width: 100%; border-radius: 12px; background: #000; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">IQC Generator</h1>
+      <p class="tool-sub">Bikin gambar quote aesthetic</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📝 Teks Quote</h3>
+    <div class="field">
+      <label>Quote kamu</label>
+      <textarea id="iqcText" maxlength="200" placeholder="Tulis quote keren di sini..." oninput="updateChar()">Hidup itu tentang belajar, bukan tentang sempurna.</textarea>
+      <div style="font-size:10px;color:var(--text-muted);text-align:right;margin-top:4px;"><span id="charCount">0</span>/200</div>
+    </div>
+    <div class="field">
+      <label>Author (opsional)</label>
+      <input type="text" id="iqcAuthor" placeholder="@username" maxlength="30" value="@WenzZDev">
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🎨 Pilih Template</h3>
+    <div class="template-grid">
+      <div class="tpl-option tpl-1 active" data-tpl="1" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-2" data-tpl="2" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-3" data-tpl="3" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-4" data-tpl="4" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-5" data-tpl="5" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-6" data-tpl="6" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-7" data-tpl="7" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-8" data-tpl="8" onclick="pickTpl(this)"></div>
+      <div class="tpl-option tpl-9" data-tpl="9" onclick="pickTpl(this)"></div>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateIQC()">🎨 Generate Gambar</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="iqcCanvas" class="preview-canvas"></canvas>
+    <button class="btn-outline" onclick="downloadIQC()">⬇️ Download PNG</button>
+    <button class="btn-outline" onclick="resetIQC()">🔄 Reset</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+// Auto-load tema
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+let selectedTpl = '1';
+
+const templates = {
+  '1': { type: 'gradient', colors: ['#667eea', '#764ba2'], textColor: '#fff' },
+  '2': { type: 'gradient', colors: ['#f093fb', '#f5576c'], textColor: '#fff' },
+  '3': { type: 'gradient', colors: ['#4facfe', '#00f2fe'], textColor: '#fff' },
+  '4': { type: 'gradient', colors: ['#43e97b', '#38f9d7'], textColor: '#0a0a0a' },
+  '5': { type: 'gradient', colors: ['#fa709a', '#fee140'], textColor: '#1a1a1a' },
+  '6': { type: 'gradient', colors: ['#30cfd0', '#330867'], textColor: '#fff' },
+  '7': { type: 'solid', colors: ['#1a1a1a'], textColor: '#fff' },
+  '8': { type: 'gradient', colors: ['#ff9a9e', '#fecfef'], textColor: '#1a1a1a' },
+  '9': { type: 'gradient', colors: ['#ff6b6b', '#4ecdc4'], textColor: '#fff' }
+};
+
+function updateChar() {
+  const len = document.getElementById('iqcText').value.length;
+  document.getElementById('charCount').textContent = len;
+}
+
+function pickTpl(el) {
+  document.querySelectorAll('.tpl-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  selectedTpl = el.dataset.tpl;
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + ' ';
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line.trim());
+
+  const startY = y - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((l, i) => {
+    ctx.fillText(l, x, startY + (i * lineHeight));
+  });
+
+  return lines.length;
+}
+
+function generateIQC() {
+  const text = document.getElementById('iqcText').value.trim();
+  const author = document.getElementById('iqcAuthor').value.trim();
+
+  if (!text) {
+    alert('Tulis quote dulu ya!');
+    return;
+  }
+
+  const canvas = document.getElementById('iqcCanvas');
+  const size = 1080;
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext('2d');
+  const tpl = templates[selectedTpl];
+
+  // Background
+  if (tpl.type === 'gradient') {
+    const grad = ctx.createLinearGradient(0, 0, size, size);
+    grad.addColorStop(0, tpl.colors[0]);
+    grad.addColorStop(1, tpl.colors[1]);
+    ctx.fillStyle = grad;
+  } else {
+    ctx.fillStyle = tpl.colors[0];
+  }
+  ctx.fillRect(0, 0, size, size);
+
+  // Decorative elements
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = tpl.textColor;
+  ctx.beginPath();
+  ctx.arc(150, 150, 200, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(size - 150, size - 150, 250, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Quote marks
+  ctx.fillStyle = tpl.textColor;
+  ctx.globalAlpha = 0.15;
+  ctx.font = 'bold 280px Georgia, serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('"', 60, 40);
+  ctx.textAlign = 'right';
+  ctx.fillText('"', size - 60, size - 320);
+  ctx.globalAlpha = 1;
+
+  // Quote text
+  ctx.fillStyle = tpl.textColor;
+  ctx.font = 'bold 52px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const maxWidth = size - 200;
+  wrapText(ctx, text, size / 2, size / 2 - 40, maxWidth, 70);
+
+  // Author
+  if (author) {
+    ctx.font = '32px Georgia, serif';
+    ctx.globalAlpha = 0.85;
+    ctx.fillText('— ' + author, size / 2, size / 2 + 220);
+    ctx.globalAlpha = 1;
+  }
+
+  // Watermark
+  ctx.font = '20px sans-serif';
+  ctx.globalAlpha = 0.4;
+  ctx.textAlign = 'center';
+  ctx.fillText('WenzZTools • @WenzZDev', size / 2, size - 50);
+  ctx.globalAlpha = 1;
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadIQC() {
+  const canvas = document.getElementById('iqcCanvas');
+  const link = document.createElement('a');
+  link.download = 'iqc-quote-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Download dimulai');
+}
+
+function resetIQC() {
+  document.getElementById('iqcText').value = '';
+  document.getElementById('iqcAuthor').value = '@WenzZDev';
+  document.getElementById('previewWrap').classList.remove('show');
+  document.getElementById('charCount').textContent = '0';
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+updateChar();
+</script>
+</body>
+</html>

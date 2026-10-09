@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sertifikat Tolol - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field select { width: 100%; padding: 11px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; }
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline { width: 100%; padding: 12px; background: transparent; color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 8px; font-family: inherit; }
+.btn-outline:hover { background: var(--bg-hover); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+.preview-canvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Sertifikat Tolol</h1>
+      <p class="tool-sub">Bikin sertifikat lucu buat teman</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📝 Data Sertifikat</h3>
+    <div class="field">
+      <label>Nama Penerima</label>
+      <input type="text" id="namaPenerima" placeholder="Nama kamu / teman..." maxlength="30" value="Budi Santoso">
+    </div>
+    <div class="field">
+      <label>Penghargaan</label>
+      <select id="alasan">
+        <option value="Juara 1 Rebahan Se-Jagat Raya">Juara 1 Rebahan Sedunia</option>
+        <option value="Ahli Ngoding Sambil Rebahan">Ahli Ngoding Sambil Rebahan</option>
+        <option value="Sultan Overthinking Tingkat Nasional">Sultan Overthinking</option>
+        <option value="Master Scroll TikTok 24 Jam">Master Scroll TikTok 24 Jam</option>
+        <option value="Pemegang Rekor Nunda Pekerjaan">Pemegang Rekor Nunda Kerjaan</option>
+        <option value="Profesor Mager Tingkat Internasional">Profesor Mager Internasional</option>
+        <option value="Doktor Cinta Tak Berbalas">Doktor Cinta Tak Berbalas</option>
+        <option value="Ahli Belanja Online Tanpa Uang">Ahli Belanja Tanpa Uang</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Diberikan Oleh</label>
+      <input type="text" id="pemberi" placeholder="Nama pemberi..." maxlength="25" value="WenzZDev">
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateSertifikat()">📜 Generate Sertifikat</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="sertifCanvas" class="preview-canvas"></canvas>
+    <button class="btn-outline" onclick="downloadSertif()">⬇️ Download PNG</button>
+    <button class="btn-outline" onclick="resetSertif()">🔄 Reset</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+  for (let n = 0; n < words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + ' ';
+    } else line = test;
+  }
+  lines.push(line.trim());
+  const startY = y - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+  return lines.length;
+}
+
+function generateSertifikat() {
+  const nama = document.getElementById('namaPenerima').value.trim();
+  const alasan = document.getElementById('alasan').value;
+  const pemberi = document.getElementById('pemberi').value.trim() || 'WenzZDev';
+
+  if (!nama) { alert('Nama penerima belum diisi!'); return; }
+
+  const canvas = document.getElementById('sertifCanvas');
+  const W = 1200;
+  const H = 850;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background cream
+  ctx.fillStyle = '#fef9e7';
+  ctx.fillRect(0, 0, W, H);
+
+  // Border luar
+  ctx.strokeStyle = '#d4a017';
+  ctx.lineWidth = 18;
+  ctx.strokeRect(20, 20, W - 40, H - 40);
+
+  // Border dalam
+  ctx.strokeStyle = '#b8860b';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(40, 40, W - 80, H - 80);
+
+  // Corner decorations
+  ctx.strokeStyle = '#d4a017';
+  ctx.lineWidth = 4;
+  [[60, 60], [W - 60, 60], [60, H - 60], [W - 60, H - 60]].forEach(([x, y]) => {
+    ctx.beginPath();
+    ctx.arc(x, y, 25, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, y, 15, 0, Math.PI * 2);
+    ctx.fillStyle = '#d4a017';
+    ctx.fill();
+  });
+
+  // Header "SERTIFIKAT"
+  ctx.fillStyle = '#8b0000';
+  ctx.font = 'bold 68px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('SERTIFIKAT', W / 2, 130);
+
+  ctx.fillStyle = '#b8860b';
+  ctx.font = '22px Georgia, serif';
+  ctx.fillText('★  PENGHARGAAN RESMI  ★', W / 2, 185);
+
+  // Garis pemisah
+  ctx.strokeStyle = '#d4a017';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(200, 215);
+  ctx.lineTo(W - 200, 215);
+  ctx.stroke();
+
+  // "Diberikan kepada"
+  ctx.fillStyle = '#555';
+  ctx.font = 'italic 20px Georgia, serif';
+  ctx.fillText('Diberikan kepada:', W / 2, 270);
+
+  // Nama penerima
+  ctx.fillStyle = '#1a1a1a';
+  ctx.font = 'bold 64px Georgia, serif';
+  ctx.fillText(nama, W / 2, 350);
+
+  // Garis bawah nama
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 280, 400);
+  ctx.lineTo(W / 2 + 280, 400);
+  ctx.stroke();
+
+  // "Atas prestasinya sebagai"
+  ctx.fillStyle = '#555';
+  ctx.font = 'italic 18px Georgia, serif';
+  ctx.fillText('Atas prestasi gemilangnya sebagai:', W / 2, 450);
+
+  // Alasan (penghargaan)
+  ctx.fillStyle = '#8b0000';
+  ctx.font = 'bold 34px Georgia, serif';
+  drawWrapped(ctx, '"' + alasan + '"', W / 2, 520, W - 300, 44);
+
+  // Tanggal
+  const today = new Date();
+  const tanggal = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+  ctx.fillStyle = '#555';
+  ctx.font = 'italic 16px Georgia, serif';
+  ctx.fillText('Diberikan pada tanggal ' + tanggal, W / 2, 650);
+
+  // Tanda tangan kiri (pemberi)
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(230, 745);
+  ctx.lineTo(430, 745);
+  ctx.stroke();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.font = 'bold 20px Georgia, serif';
+  ctx.fillText(pemberi, 330, 780);
+  ctx.fillStyle = '#666';
+  ctx.font = 'italic 12px Georgia, serif';
+  ctx.fillText('Pemberi Penghargaan', 330, 802);
+
+  // Tanda tangan kanan (penerima)
+  ctx.beginPath();
+  ctx.moveTo(W - 430, 745);
+  ctx.lineTo(W - 230, 745);
+  ctx.stroke();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.font = 'bold 20px Georgia, serif';
+  ctx.fillText(nama, W - 330, 780);
+  ctx.fillStyle = '#666';
+  ctx.font = 'italic 12px Georgia, serif';
+  ctx.fillText('Penerima Penghargaan', W - 330, 802);
+
+  // Watermark
+  ctx.fillStyle = 'rgba(139, 0, 0, 0.15)';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillText('WenzZTools • @WenzZDev', W / 2, H - 45);
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadSertif() {
+  const canvas = document.getElementById('sertifCanvas');
+  const link = document.createElement('a');
+  link.download = 'sertifikat-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Sertifikat ke-download!');
+}
+
+function resetSertif() {
+  document.getElementById('namaPenerima').value = '';
+  document.getElementById('pemberi').value = 'WenzZDev';
+  document.getElementById('previewWrap').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

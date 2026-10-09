@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Riwayat - WenzZTools</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.riwayat-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 16px 130px;
+}
+.riwayat-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+.riwayat-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+}
+.stat-card .stat-num {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 4px;
+}
+.stat-card .stat-lbl {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.riwayat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.riwayat-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+.clear-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+.clear-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+.riwayat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.riwayat-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition);
+}
+.riwayat-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+.riwayat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.riwayat-info {
+  flex: 1;
+  min-width: 0;
+}
+.riwayat-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.riwayat-time {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+.riwayat-arrow {
+  font-size: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.empty-riwayat {
+  text-align: center;
+  padding: 60px 20px;
+}
+.empty-icon {
+  font-size: 52px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+.empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.empty-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 260px;
+  margin: 0 auto;
+}
+.today-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  padding-left: 4px;
+}
+.today-label:first-child {
+  margin-top: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="riwayat-page">
+
+  <div class="app-header">
+    <div class="header-left">
+      <div class="logo-dot"></div>
+      <h1 class="app-name">WenzZ<span>Tools</span></h1>
+    </div>
+  </div>
+
+  <h1 class="riwayat-title">Riwayat</h1>
+  <p class="riwayat-sub">Tool yang kamu pernah pakai</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-num" id="statTotal">0</span>
+      <span class="stat-lbl">Total Dipakai</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" id="statToday">0</span>
+      <span class="stat-lbl">Hari Ini</span>
+    </div>
+  </div>
+
+  <div class="riwayat-header">
+    <span class="riwayat-section-title">🕐 Aktivitas</span>
+    <button class="clear-btn" onclick="clearRiwayat()">🗑️ Hapus Semua</button>
+  </div>
+
+  <div class="riwayat-list" id="riwayatList"></div>
+
+  <div class="empty-riwayat" id="emptyRiwayat" style="display:none;">
+    <div class="empty-icon">📭</div>
+    <h3 class="empty-title">Belum ada riwayat</h3>
+    <p class="empty-desc">Coba buka salah satu tool di halaman Beranda atau Tools. Aktivitas kamu akan muncul di sini.</p>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<nav class="liquid-nav liquid-nav-5">
+  <a class="nav-btn" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    <span>Home</span>
+  </a>
+  <a class="nav-btn" href="tools.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <span>Tools</span>
+  </a>
+  <a class="nav-btn nav-center" href="ai.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span>AI</span>
+  </a>
+  <a class="nav-btn active" href="riwayat.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+    <span>Riwayat</span>
+  </a>
+  <a class="nav-btn" href="profil.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
+    </svg>
+    <span>Profil</span>
+  </a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Auto-load tema
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+// Mapping nama tool ke emoji
+const toolIcons = {
+  'TikTok': '🎬',
+  'Instagram': '📷',
+  'QR Code': '📱',
+  'CV Builder': '📄',
+  'Password': '🔒',
+  'Base64': '💻',
+  'Calculator': '🧮',
+  'WenzZ AI': '🤖'
+};
+
+function getIcon(name) {
+  for (const key in toolIcons) {
+    if (name.toLowerCase().includes(key.toLowerCase())) return toolIcons[key];
+  }
+  return '🔧';
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const min = Math.floor(diff / 60000);
+  const hour = Math.floor(diff / 3600000);
+  const day = Math.floor(diff / 86400000);
+
+  if (min < 1) return 'Baru saja';
+  if (min < 60) return min + ' menit lalu';
+  if (hour < 24) return hour + ' jam lalu';
+  if (day === 1) return 'Kemarin';
+  if (day < 7) return day + ' hari lalu';
+  
+  return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+}
+
+function getDateGroup(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 86400000);
+  const weekAgo = new Date(today.getTime() - 7 * 86400000);
+  const itemDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  if (itemDate.getTime() === today.getTime()) return 'Hari Ini';
+  if (itemDate.getTime() === yesterday.getTime()) return 'Kemarin';
+  if (itemDate >= weekAgo) return 'Minggu Ini';
+  return 'Lebih Lama';
+}
+
+function loadRiwayat() {
+  const history = JSON.parse(localStorage.getItem('wenzz-history') || '[]');
+  const list = document.getElementById('riwayatList');
+  const empty = document.getElementById('emptyRiwayat');
+
+  // Update stats
+  document.getElementById('statTotal').textContent = history.length;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayCount = history.filter(h => h.time >= today.getTime()).length;
+  document.getElementById('statToday').textContent = todayCount;
+
+  if (history.length === 0) {
+    list.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  list.style.display = 'flex';
+  empty.style.display = 'none';
+
+  // Group by date
+  const groups = {};
+  history.forEach(h => {
+    const group = getDateGroup(h.time);
+    if (!groups[group]) groups[group] = [];
+    groups[group].push(h);
+  });
+
+  const order = ['Hari Ini', 'Kemarin', 'Minggu Ini', 'Lebih Lama'];
+  let html = '';
+
+  order.forEach(groupName => {
+    if (!groups[groupName]) return;
+    html += '<div class="today-label">' + groupName + '</div>';
+    groups[groupName].forEach(item => {
+      html += '<div class="riwayat-item">' +
+        '<div class="riwayat-icon">' + getIcon(item.name) + '</div>' +
+        '<div class="riwayat-info">' +
+          '<div class="riwayat-name">' + item.name + '</div>' +
+          '<div class="riwayat-time">' + formatTime(item.time) + '</div>' +
+        '</div>' +
+        '<div class="riwayat-arrow">→</div>' +
+      '</div>';
+    });
+  });
+
+  list.innerHTML = html;
+}
+
+function clearRiwayat() {
+  if (!confirm('Hapus semua riwayat?')) return;
+  localStorage.removeItem('wenzz-history');
+  loadRiwayat();
+  showToast('🗑️ Riwayat dihapus');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+loadRiwayat();
+</script>
+</body>
+</html>

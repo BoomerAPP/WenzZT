@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Word Counter - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.section h3 button { background: transparent; border: 1px solid var(--border-light); color: var(--text-secondary); padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.section h3 button:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: var(--transition);
+  box-sizing: border-box;
+  resize: vertical;
+  line-height: 1.6;
+}
+textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stat-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+  transition: var(--transition);
+}
+.stat-box:hover { border-color: var(--accent); transform: translateY(-2px); }
+.stat-num { font-size: 22px; font-weight: 800; color: var(--accent); display: block; margin-bottom: 4px; line-height: 1; }
+.stat-lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.time-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.time-ic { font-size: 20px; margin-bottom: 6px; display: block; }
+.time-num { font-size: 13px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 2px; }
+.time-lbl { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Word Counter</h1>
+      <p class="tool-sub">Hitung kata, karakter & waktu baca</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>
+      <span>📝 Text</span>
+      <button onclick="pasteText()">📋 Paste</button>
+    </h3>
+    <textarea id="textInput" placeholder="Ketik atau paste teks di sini... Biarkan kosong buat reset." oninput="countAll()"></textarea>
+  </div>
+
+  <div class="section">
+    <h3>📊 Statistik</h3>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-num" id="wordCount">0</span>
+        <span class="stat-lbl">Kata</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="charCount">0</span>
+        <span class="stat-lbl">Karakter</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="charNoSpace">0</span>
+        <span class="stat-lbl">Tanpa Spasi</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="sentenceCount">0</span>
+        <span class="stat-lbl">Kalimat</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="paragraphCount">0</span>
+        <span class="stat-lbl">Paragraf</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="readingLevel">-</span>
+        <span class="stat-lbl">Level</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>⏱️ Estimasi Waktu Baca</h3>
+    <div class="time-grid">
+      <div class="time-box">
+        <span class="time-ic">🐢</span>
+        <span class="time-num" id="timeSlow">0m</span>
+        <span class="time-lbl">Lambat</span>
+      </div>
+      <div class="time-box">
+        <span class="time-ic">📖</span>
+        <span class="time-num" id="timeNormal">0m</span>
+        <span class="time-lbl">Normal</span>
+      </div>
+      <div class="time-box">
+        <span class="time-ic">⚡</span>
+        <span class="time-num" id="timeFast">0m</span>
+        <span class="time-lbl">Cepat</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn-action primary" onclick="copyStats()">📋 Copy Statistik</button>
+    <button class="btn-action" onclick="clearText()">🗑️ Clear</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+function countAll() {
+  const text = document.getElementById('textInput').value;
+
+  // Word count
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+  // Char count
+  const chars = text.length;
+
+  // Char no space
+  const charsNoSpace = text.replace(/\s/g, '').length;
+
+  // Sentence count (titik, tanya, seru)
+  const sentences = text.trim() ? (text.match(/[.!?]+/g) || []).length : 0;
+  const finalSentences = text.trim() && sentences === 0 ? 1 : sentences;
+
+  // Paragraph count (pisah enter kosong)
+  const paragraphs = text.trim() ? text.trim().split(/\n\s*\n/).filter(p => p.trim()).length : 0;
+  const finalParagraphs = text.trim() ? Math.max(paragraphs, 1) : 0;
+
+  // Update stats
+  document.getElementById('wordCount').textContent = words;
+  document.getElementById('charCount').textContent = chars;
+  document.getElementById('charNoSpace').textContent = charsNoSpace;
+  document.getElementById('sentenceCount').textContent = finalSentences;
+  document.getElementById('paragraphCount').textContent = finalParagraphs;
+
+  // Reading level
+  let level = '-';
+  if (words > 0 && words < 50) level = 'Sangat Pendek';
+  else if (words < 150) level = 'Pendek';
+  else if (words < 400) level = 'Sedang';
+  else if (words < 800) level = 'Panjang';
+  else if (words >= 800) level = 'Sangat Panjang';
+  document.getElementById('readingLevel').textContent = level;
+
+  // Reading time
+  // Lambat: 100 kata/menit, Normal: 200 kata/menit, Cepat: 300 kata/menit
+  document.getElementById('timeSlow').textContent = formatTime(words, 100);
+  document.getElementById('timeNormal').textContent = formatTime(words, 200);
+  document.getElementById('timeFast').textContent = formatTime(words, 300);
+}
+
+function formatTime(words, wpm) {
+  if (words === 0) return '0m';
+  const minutes = words / wpm;
+  if (minutes < 1) return Math.round(minutes * 60) + 's';
+  if (minutes < 60) return Math.round(minutes) + 'm';
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+  return hours + 'j ' + mins + 'm';
+}
+
+function pasteText() {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.readText().then(text => {
+      document.getElementById('textInput').value = text;
+      countAll();
+      showToast('📋 Berhasil paste');
+    }).catch(() => showToast('⚠️ Paste manual aja'));
+  } else {
+    showToast('⚠️ Paste manual aja');
+  }
+}
+
+function copyStats() {
+  const stats = [
+    '📊 Statistik WenzZTools',
+    '',
+    '📝 Kata: ' + document.getElementById('wordCount').textContent,
+    '🔤 Karakter: ' + document.getElementById('charCount').textContent,
+    '🔤 Tanpa spasi: ' + document.getElementById('charNoSpace').textContent,
+    '📄 Kalimat: ' + document.getElementById('sentenceCount').textContent,
+    '📃 Paragraf: ' + document.getElementById('paragraphCount').textContent,
+    '📈 Level: ' + document.getElementById('readingLevel').textContent,
+    '',
+    '⏱️ Waktu baca:',
+    '🐢 Lambat: ' + document.getElementById('timeSlow').textContent,
+    '📖 Normal: ' + document.getElementById('timeNormal').textContent,
+    '⚡ Cepat: ' + document.getElementById('timeFast').textContent
+  ].join('\n');
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(stats).then(() => showToast('📋 Statistik ke-copy!')).catch(() => fallbackCopy(stats));
+  } else {
+    fallbackCopy(stats);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('📋 Statistik ke-copy!');
+  } catch(e) {
+    showToast('❌ Gagal copy');
+  }
+  document.body.removeChild(ta);
+}
+
+function clearText() {
+  document.getElementById('textInput').value = '';
+  countAll();
+  showToast('🗑️ Text dihapus');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+countAll();
+</script>
+</body>
+</html>

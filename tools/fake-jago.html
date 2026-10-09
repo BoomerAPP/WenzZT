@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fake Bank Jago - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.warning { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 11px; color: #fca5a5; line-height: 1.5; }
+.warning strong { color: #ef4444; font-size: 12px; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field select { width: 100%; padding: 10px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; }
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+#jagoCanvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Fake Bank Jago</h1>
+      <p class="tool-sub">Simulasi tampilan saldo Jago</p>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ PERINGATAN KERAS:</strong> Tool ini buat <strong>prank / mockup design</strong> doang. <strong>DILARANG KERAS</strong> dipakai buat nipu orang, jual-beli, atau aktivitas ilegal. Hasil akhir <strong>ada watermark "SIMULASI"</strong> besar + "WenzZTools". Salah pakai = pidana!
+  </div>
+
+  <div class="section">
+    <h3>💰 Data Saldo</h3>
+    <div class="field">
+      <label>Nama Pemilik</label>
+      <input type="text" id="jagoName" placeholder="Nama lengkap..." maxlength="30" value="Budi Santoso">
+    </div>
+    <div class="field">
+      <label>Saldo Utama (Rp)</label>
+      <input type="text" id="jagoBalance" placeholder="5000000" maxlength="15" value="8500000">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Nomor Rekening</label>
+        <input type="text" id="jagoNumber" placeholder="xxxx" maxlength="20" value="5211 8899 2145">
+      </div>
+      <div class="field">
+        <label>Jam</label>
+        <input type="text" id="jagoTime" placeholder="09:41" maxlength="10" value="09:41">
+      </div>
+    </div>
+    <div class="field">
+      <label>Tipe Kartu</label>
+      <select id="jagoCard">
+        <option value="Visa Debit">Visa Debit</option>
+        <option value="Mastercard">Mastercard</option>
+        <option value="Kantor">Kantor</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateJago()">🏦 Generate Tampilan</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="jagoCanvas"></canvas>
+    <div class="action-row">
+      <button class="btn-action primary" onclick="downloadJago()">⬇️ Download PNG</button>
+      <button class="btn-action" onclick="resetJago()">🔄 Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+function formatRupiah(num) {
+  const n = num.toString().replace(/\D/g, '');
+  if (!n) return '0';
+  return n.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function generateJago() {
+  const name = document.getElementById('jagoName').value.trim() || 'Pengguna';
+  const balance = document.getElementById('jagoBalance').value.trim() || '0';
+  const number = document.getElementById('jagoNumber').value.trim() || '';
+  const time = document.getElementById('jagoTime').value.trim() || '09:41';
+  const cardType = document.getElementById('jagoCard').value;
+
+  const canvas = document.getElementById('jagoCanvas');
+  const W = 720;
+  const H = 1280;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background Jago — orange gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#ff6b00');
+  grad.addColorStop(0.5, '#f43f00');
+  grad.addColorStop(1, '#b91c00');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Status bar
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 15px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(time, 20, 30);
+  ctx.textAlign = 'right';
+  ctx.fillText('87%  ▮▮▮  📶', W - 20, 30);
+
+  // Header
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Hai,', 30, 100);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 22px sans-serif';
+  ctx.fillText(name, 30, 130);
+
+  // Icon kanan (bell + profile)
+  ctx.textAlign = 'right';
+  ctx.font = '20px sans-serif';
+  ctx.fillText('🔔', W - 80, 115);
+  ctx.fillText('👤', W - 30, 115);
+
+  // KARTU JAGO UTAMA
+  const cardX = 30;
+  const cardY = 180;
+  const cardW = W - 60;
+  const cardH = 260;
+
+  // Kartu gradient lebih terang
+  const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+  cardGrad.addColorStop(0, '#ff8800');
+  cardGrad.addColorStop(1, '#cc3300');
+  ctx.fillStyle = cardGrad;
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(cardX, cardY, cardW, cardH, 22);
+  } else {
+    ctx.rect(cardX, cardY, cardW, cardH);
+  }
+  ctx.fill();
+
+  // Border kartu
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(cardX, cardY, cardW, cardH, 22);
+  } else {
+    ctx.rect(cardX, cardY, cardW, cardH);
+  }
+  ctx.stroke();
+
+  // Label tipe kartu
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(cardType, cardX + 25, cardY + 30);
+
+  // Logo Jago (bulatan + tulisan)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(cardX + 35, cardY + 70, 18, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ff6b00';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('J', cardX + 35, cardY + 72);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('jago', cardX + 65, cardY + 72);
+
+  // "Saldo"
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '13px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Saldo Tersedia', cardX + 25, cardY + 130);
+
+  // Saldo
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 38px sans-serif';
+  ctx.fillText('Rp ' + formatRupiah(balance), cardX + 25, cardY + 180);
+
+  // Nomor kartu
+  if (number) {
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '14px monospace';
+    ctx.fillText(number, cardX + 25, cardY + 220);
+  }
+
+  // Chip kartu
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(cardX + cardW - 70, cardY + 200, 45, 32, 5);
+  } else {
+    ctx.rect(cardX + cardW - 70, cardY + 200, 45, 32);
+  }
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // ============ MENU AKSI ============
+  const menuY = cardY + cardH + 40;
+  const menuItems = [
+    { icon: '📤', label: 'Transfer' },
+    { icon: '📥', label: 'Top Up' },
+    { icon: '💳', label: 'Bayar' },
+    { icon: '📊', label: 'Investasi' }
+  ];
+  const menuW = (W - 80) / 4;
+
+  menuItems.forEach((item, i) => {
+    const mx = 40 + i * menuW;
+    // Bulatan background
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(mx + menuW / 2 - 5, menuY, 28, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = '22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(item.icon, mx + menuW / 2 - 5, menuY);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText(item.label, mx + menuW / 2 - 5, menuY + 45);
+  });
+
+  // ============ KANTONG / POCKET ============
+  const pocketY = menuY + 100;
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🎯 Kantong', 30, pocketY);
+
+  // Kantong cards
+  const pockets = [
+    { name: 'Belanja Harian', amount: 'Rp 1.250.000', icon: '🛒' },
+    { name: 'Tabungan Liburan', amount: 'Rp 3.500.000', icon: '✈️' }
+  ];
+
+  pockets.forEach((p, i) => {
+    const py = pocketY + 30 + i * 80;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(20, py, W - 40, 68, 14);
+    } else {
+      ctx.rect(20, py, W - 40, 68);
+    }
+    ctx.fill();
+
+    // Icon kotak
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(35, py + 12, 44, 44, 10);
+    } else {
+      ctx.rect(35, py + 12, 44, 44);
+    }
+    ctx.fill();
+
+    ctx.font = '22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(p.icon, 57, py + 34);
+
+    // Name
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText(p.name, 95, py + 26);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(p.amount, 95, py + 46);
+
+    // Arrow
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('›', W - 40, py + 34);
+  });
+
+  // ============ WATERMARK BESAR "SIMULASI" ============
+  ctx.save();
+  ctx.translate(W / 2, H / 2);
+  ctx.rotate(-Math.PI / 8);
+  ctx.fillStyle = 'rgba(255, 0, 0, 0.18)';
+  ctx.font = 'bold 130px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('SIMULASI', 0, 0);
+  ctx.restore();
+
+  // Watermark bawah
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⚠️ PALSU — Dibuat dengan WenzZTools • @WenzZDev ⚠️', W / 2, H - 20);
+
+  ctx.fillStyle = 'rgba(255, 50, 50, 0.95)';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillText('BUKAN APLIKASI RESMI — HANYA SIMULASI', W / 2, H - 45);
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadJago() {
+  const canvas = document.getElementById('jagoCanvas');
+  const link = document.createElement('a');
+  link.download = 'fake-jago-SIMULASI-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Screenshot ke-download!');
+}
+
+function resetJago() {
+  document.getElementById('jagoName').value = 'Budi Santoso';
+  document.getElementById('jagoBalance').value = '8500000';
+  document.getElementById('jagoNumber').value = '5211 8899 2145';
+  document.getElementById('jagoTime').value = '09:41';
+  document.getElementById('jagoCard').value = 'Visa Debit';
+  document.getElementById('previewWrap').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

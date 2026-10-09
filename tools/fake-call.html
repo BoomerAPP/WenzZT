@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fake Call - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.warning { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+.warning strong { color: #ef4444; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field select { width: 100%; padding: 10px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; }
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.app-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.app-opt { padding: 12px 6px; background: var(--bg-secondary); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; transition: var(--transition); text-align: center; font-family: inherit; }
+.app-opt:hover { border-color: var(--border-light); }
+.app-opt.active { border-color: var(--accent); background: var(--bg-hover); box-shadow: var(--glow); }
+.app-opt .app-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.app-opt .app-name { font-size: 9.5px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.3px; text-transform: uppercase; }
+.app-opt.active .app-name { color: var(--accent); }
+
+.avatar-preview { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 12px; background: var(--bg-secondary); border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+.avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-preview .placeholder { font-size: 28px; color: var(--text-muted); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+#callCanvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Fake Call</h1>
+      <p class="tool-sub">Layar panggilan masuk palsu</p>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ Peringatan:</strong> Tool ini buat <strong>prank / mockup design</strong>. Dilarang pakai buat nipu orang. Ada watermark WenzZTools di hasil akhir.
+  </div>
+
+  <div class="section">
+    <h3>📞 Jenis Panggilan</h3>
+    <div class="app-selector">
+      <div class="app-opt active" data-app="wa" onclick="pickApp(this)">
+        <span class="app-icon">💬</span>
+        <span class="app-name">WhatsApp</span>
+      </div>
+      <div class="app-opt" data-app="phone" onclick="pickApp(this)">
+        <span class="app-icon">📞</span>
+        <span class="app-name">Telepon</span>
+      </div>
+      <div class="app-opt" data-app="video" onclick="pickApp(this)">
+        <span class="app-icon">📹</span>
+        <span class="app-name">Video Call</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>👤 Kontak</h3>
+    <div class="avatar-preview" id="avatarPreview" onclick="document.getElementById('avatarInput').click()">
+      <span class="placeholder">📷</span>
+    </div>
+    <p style="font-size:10px;color:var(--text-muted);text-align:center;margin-bottom:10px;">Tap untuk upload foto (opsional)</p>
+
+    <div class="field">
+      <label>Nama Pemanggil</label>
+      <input type="text" id="callName" placeholder="Nama..." maxlength="30" value="Budi Santoso">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Nomor</label>
+        <input type="text" id="callNumber" placeholder="+62..." maxlength="20" value="+62 812-3456-7890">
+      </div>
+      <div class="field">
+        <label>Jam</label>
+        <input type="text" id="callTime" placeholder="09:41" maxlength="10" value="09:41">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generateCall()">📱 Generate Screenshot</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="callCanvas"></canvas>
+    <div class="action-row">
+      <button class="btn-action primary" onclick="downloadCall()">⬇️ Download PNG</button>
+      <button class="btn-action" onclick="resetCall()">🔄 Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<input type="file" id="avatarInput" style="display:none;" accept="image/*">
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+let selectedApp = 'wa';
+let avatarImage = null;
+
+function pickApp(el) {
+  document.querySelectorAll('.app-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  selectedApp = el.dataset.app;
+}
+
+document.getElementById('avatarInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    avatarImage = new Image();
+    avatarImage.src = ev.target.result;
+    avatarImage.onload = () => {
+      const prev = document.getElementById('avatarPreview');
+      prev.innerHTML = '<img src="' + ev.target.result + '">';
+    };
+  };
+  reader.readAsDataURL(file);
+});
+
+function generateCall() {
+  const name = document.getElementById('callName').value.trim() || 'Kontak';
+  const number = document.getElementById('callNumber').value.trim() || '';
+  const time = document.getElementById('callTime').value.trim() || '09:41';
+
+  const canvas = document.getElementById('callCanvas');
+  const W = 720;
+  const H = 1280;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background gradient
+  let grad;
+  if (selectedApp === 'wa') {
+    grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#0a1f1c');
+    grad.addColorStop(1, '#1a1a1a');
+  } else if (selectedApp === 'video') {
+    grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#0a1929');
+    grad.addColorStop(1, '#000');
+  } else {
+    grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#1a1a1a');
+    grad.addColorStop(1, '#000');
+  }
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Status bar
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 15px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(time, 20, 30);
+  ctx.textAlign = 'right';
+  ctx.fillText('87%  ▮▮▮  📶', W - 20, 30);
+
+  // App name di atas
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '13px sans-serif';
+  ctx.textAlign = 'center';
+  let appLabel = 'WhatsApp';
+  if (selectedApp === 'video') appLabel = 'Video Call';
+  else if (selectedApp === 'phone') appLabel = 'Panggilan Telepon';
+  ctx.fillText(appLabel, W / 2, 80);
+
+  // Avatar
+  const avatarR = 100;
+  const avatarX = W / 2;
+  const avatarY = 400;
+
+  // Avatar circle
+  ctx.beginPath();
+  ctx.arc(avatarX, avatarY, avatarR, 0, Math.PI * 2);
+  if (avatarImage && avatarImage.complete) {
+    ctx.save();
+    ctx.clip();
+    ctx.drawImage(avatarImage, avatarX - avatarR, avatarY - avatarR, avatarR * 2, avatarR * 2);
+    ctx.restore();
+  } else {
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 80px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(name.charAt(0).toUpperCase(), avatarX, avatarY);
+  }
+
+  // Ring avatar (animasi visual)
+  ctx.beginPath();
+  ctx.arc(avatarX, avatarY, avatarR + 10, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Nama
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 42px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name, W / 2, 570);
+
+  // Nomor
+  if (number) {
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '20px sans-serif';
+    ctx.fillText(number, W / 2, 615);
+  }
+
+  // Status "Panggilan masuk..." dengan animasi dots
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '18px sans-serif';
+  const incomingLabel = selectedApp === 'video' ? 'Video call masuk...' : 'Panggilan masuk...';
+  ctx.fillText(incomingLabel, W / 2, 680);
+
+  // Tombol action (Answer + Decline)
+  const btnY = H - 280;
+  const btnR = 50;
+
+  // Decline button (merah) — kiri
+  ctx.beginPath();
+  ctx.arc(W / 2 - 100, btnY, btnR, 0, Math.PI * 2);
+  ctx.fillStyle = '#ef4444';
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 36px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✕', W / 2 - 100, btnY);
+
+  // Answer button (hijau) — kanan
+  ctx.beginPath();
+  ctx.arc(W / 2 + 100, btnY, btnR, 0, Math.PI * 2);
+  ctx.fillStyle = '#22c55e';
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.fillText('📞', W / 2 + 100, btnY);
+
+  // Label tombol
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '13px sans-serif';
+  ctx.fillText('Tolak', W / 2 - 100, btnY + 75);
+  ctx.fillText('Terima', W / 2 + 100, btnY + 75);
+
+  // Watermark
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Dibuat dengan WenzZTools • @WenzZDev', W / 2, H - 15);
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadCall() {
+  const canvas = document.getElementById('callCanvas');
+  const link = document.createElement('a');
+  link.download = 'fake-call-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Screenshot ke-download!');
+}
+
+function resetCall() {
+  document.getElementById('callName').value = 'Budi Santoso';
+  document.getElementById('callNumber').value = '+62 812-3456-7890';
+  document.getElementById('callTime').value = '09:41';
+  document.getElementById('avatarPreview').innerHTML = '<span class="placeholder">📷</span>';
+  avatarImage = null;
+  document.querySelectorAll('.app-opt').forEach((o, i) => {
+    o.classList.toggle('active', i === 0);
+  });
+  selectedApp = 'wa';
+  document.getElementById('previewWrap').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>

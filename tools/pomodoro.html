@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pomodoro Timer - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.mode-tabs { display: flex; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+.mode-tab { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.mode-tab.active { background: var(--accent); color: var(--bg-primary); }
+.timer-box { background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary)); border: 1px solid var(--border); border-radius: 24px; padding: 40px 20px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+.timer-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+.timer-mode-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 16px; }
+.timer-display { font-size: 72px; font-weight: 800; line-height: 1; color: var(--accent); margin-bottom: 8px; font-variant-numeric: tabular-nums; letter-spacing: -2px; }
+.timer-status { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+.timer-progress { width: 100%; height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; margin-bottom: 24px; }
+.timer-progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 1s linear; }
+.timer-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.ctrl-btn { padding: 14px 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.ctrl-btn:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.ctrl-btn.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); grid-column: span 2; }
+.ctrl-btn .ctrl-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+.session-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.info-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+.info-card .info-num { font-size: 22px; font-weight: 800; color: var(--accent); display: block; margin-bottom: 4px; }
+.info-card .info-lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div><h1 class="tool-title">Pomodoro Timer</h1><p class="tool-sub">Fokus 25 menit, istirahat 5 menit</p></div>
+  </div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="focus" onclick="setMode('focus', this)">🎯 Fokus 25m</button>
+    <button class="mode-tab" data-mode="short" onclick="setMode('short', this)">☕ Istirahat 5m</button>
+    <button class="mode-tab" data-mode="long" onclick="setMode('long', this)">🛌 Istirahat 15m</button>
+  </div>
+  <div class="timer-box">
+    <div class="timer-mode-label" id="modeLabel">🎯 Fokus</div>
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    <div class="timer-status" id="timerStatus">Tekan Start untuk mulai</div>
+    <div class="timer-progress"><div class="timer-progress-fill" id="progressFill"></div></div>
+    <div class="timer-controls">
+      <button class="ctrl-btn" onclick="resetTimer()"><span class="ctrl-icon">🔄</span>Reset</button>
+      <button class="ctrl-btn primary" onclick="toggleTimer()"><span class="ctrl-icon" id="playIcon">▶️</span><span id="playText">Start</span></button>
+    </div>
+  </div>
+  <div class="session-info">
+    <div class="info-card"><span class="info-num" id="sessionCount">0</span><span class="info-lbl">Sesi Selesai</span></div>
+    <div class="info-card"><span class="info-num" id="focusTime">0m</span><span class="info-lbl">Total Fokus</span></div>
+  </div>
+</div>
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+<script>
+(function() { const theme = localStorage.getItem('wenzz-theme'); if (theme) document.body.classList.add(theme); })();
+const modes = { focus: { time: 25*60, label: '🎯 Fokus' }, short: { time: 5*60, label: '☕ Istirahat Pendek' }, long: { time: 15*60, label: '🛌 Istirahat Panjang' } };
+let currentMode = 'focus';
+let totalSeconds = modes.focus.time;
+let remainingSeconds = totalSeconds;
+let timerInterval = null;
+let isRunning = false;
+let sessionCount = parseInt(localStorage.getItem('wenzz-pomodoro-sessions') || '0');
+let totalFocusMin = parseInt(localStorage.getItem('wenzz-pomodoro-focus') || '0');
+function setMode(mode, btn) {
+  if (isRunning && !confirm('Timer sedang jalan. Ganti mode?')) return;
+  stopTimer();
+  currentMode = mode;
+  totalSeconds = modes[mode].time;
+  remainingSeconds = totalSeconds;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('modeLabel').textContent = modes[mode].label;
+  updateDisplay();
+}
+function updateDisplay() {
+  const m = Math.floor(remainingSeconds / 60);
+  const s = remainingSeconds % 60;
+  document.getElementById('timerDisplay').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  const pct = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+function toggleTimer() { if (isRunning) pauseTimer(); else startTimer(); }
+function startTimer() {
+  if (remainingSeconds === 0) return;
+  isRunning = true;
+  document.getElementById('playIcon').textContent = '⏸️';
+  document.getElementById('playText').textContent = 'Pause';
+  document.getElementById('timerStatus').textContent = 'Sedang berjalan...';
+  timerInterval = setInterval(() => {
+    remainingSeconds--;
+    updateDisplay();
+    if (remainingSeconds <= 0) {
+      stopTimer();
+      onTimerComplete();
+    }
+  }, 1000);
+}
+function pauseTimer() {
+  isRunning = false;
+  clearInterval(timerInterval);
+  document.getElementById('playIcon').textContent = '▶️';
+  document.getElementById('playText').textContent = 'Start';
+  document.getElementById('timerStatus').textContent = 'Dijeda';
+}
+function stopTimer() { isRunning = false; clearInterval(timerInterval); document.getElementById('playIcon').textContent = '▶️'; document.getElementById('playText').textContent = 'Start'; }
+function resetTimer() { stopTimer(); remainingSeconds = totalSeconds; updateDisplay(); document.getElementById('timerStatus').textContent = 'Tekan Start untuk mulai'; }
+function onTimerComplete() {
+  playBeep();
+  if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 500]);
+  if (currentMode === 'focus') { sessionCount++; totalFocusMin += 25; localStorage.setItem('wenzz-pomodoro-sessions', sessionCount); localStorage.setItem('wenzz-pomodoro-focus', totalFocusMin); updateStats(); showToast('🎉 Sesi fokus selesai! Istirahat dulu.'); setModeDirect('short'); }
+  else { showToast('☕ Istirahat selesai! Fokus lagi.'); setModeDirect('focus'); }
+  document.getElementById('timerStatus').textContent = 'Tekan Start untuk lanjut';
+}
+function setModeDirect(mode) { currentMode = mode; totalSeconds = modes[mode].time; remainingSeconds = totalSeconds; document.getElementById('modeLabel').textContent = modes[mode].label; document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); updateDisplay(); }
+function playBeep() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 800; osc.type = 'sine'; gain.gain.setValueAtTime(0, ctx.currentTime); gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01); gain.gain.setValueAtTime(0.3, ctx.currentTime + 0.15); gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2); osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.2); } catch(e) {} }
+function updateStats() { document.getElementById('sessionCount').textContent = sessionCount; document.getElementById('focusTime').textContent = totalFocusMin + 'm'; }
+function showToast(msg) { const t = document.createElement('div'); t.textContent = msg; t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);'; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+updateDisplay();
+updateStats();
+</script>
+</body>
+</html>

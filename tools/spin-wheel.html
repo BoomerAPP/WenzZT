@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Spin the Wheel - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.section h3 button { background: transparent; border: 1px solid var(--border-light); color: var(--text-secondary); padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.section h3 button:hover { background: var(--bg-hover); color: var(--text-primary); }
+textarea { width: 100%; min-height: 120px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; line-height: 1.6; }
+textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.wheel-wrap { position: relative; width: 100%; max-width: 320px; margin: 0 auto 20px; }
+.wheel-canvas { width: 100%; border-radius: 50%; display: block; box-shadow: 0 8px 40px rgba(0,0,0,0.5); transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99); }
+.wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 32px; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: var(--bg-card); border: 3px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 5; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.result-box { background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary)); border: 2px solid var(--accent); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 12px; display: none; }
+.result-box.show { display: block; animation: popIn 0.5s; }
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+.result-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 8px; }
+.result-name { font-size: 24px; font-weight: 800; color: var(--accent); }
+.btn-main { width: 100%; padding: 16px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div><h1 class="tool-title">Spin the Wheel</h1><p class="tool-sub">Roda putar pemilih random</p></div>
+  </div>
+  <div class="section">
+    <h3><span>📝 Daftar Pilihan</span><button onclick="loadSample()">📋 Contoh</button></h3>
+    <textarea id="options" placeholder="Satu pilihan per baris:&#10;Nasi Goreng&#10;Mie Ayam&#10;Bakso&#10;Sate" oninput="drawWheel()">Nasi Goreng
+Mie Ayam
+Bakso
+Sate
+Rendang
+Gado-gado</textarea>
+  </div>
+  <div class="wheel-wrap">
+    <div class="wheel-pointer">▼</div>
+    <canvas id="wheelCanvas" class="wheel-canvas" width="600" height="600"></canvas>
+    <div class="wheel-center">🎯</div>
+  </div>
+  <div class="result-box" id="resultBox">
+    <div class="result-label">🎉 Hasil Putaran</div>
+    <div class="result-name" id="resultName">-</div>
+  </div>
+  <button class="btn-main" id="spinBtn" onclick="spin()">🎡 Putar Roda!</button>
+</div>
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+<script>
+(function() { const theme = localStorage.getItem('wenzz-theme'); if (theme) document.body.classList.add(theme); })();
+const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#a855f7'];
+let currentRotation = 0;
+let spinning = false;
+function getOptions() {
+  const text = document.getElementById('options').value.trim();
+  if (!text) return [];
+  return text.split(/\n/).map(o => o.trim()).filter(o => o.length > 0);
+}
+function drawWheel() {
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+  const options = getOptions();
+  const W = canvas.width;
+  const H = canvas.height;
+  const centerX = W / 2;
+  const centerY = H / 2;
+  const radius = Math.min(W, H) / 2 - 10;
+  ctx.clearRect(0, 0, W, H);
+  if (options.length === 0) {
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fillStyle = '#333';
+    ctx.fill();
+    ctx.fillStyle = '#999';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Belum ada pilihan', centerX, centerY);
+    return;
+  }
+  if (options.length === 1) {
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fillStyle = colors[0];
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 28px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(options[0], centerX, centerY);
+    return;
+  }
+  const anglePerSlice = (Math.PI * 2) / options.length;
+  options.forEach((opt, i) => {
+    const startAngle = i * anglePerSlice - Math.PI / 2;
+    const endAngle = startAngle + anglePerSlice;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(startAngle + anglePerSlice / 2);
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px sans-serif';
+    const textX = radius - 20;
+    let displayText = opt.length > 15 ? opt.substring(0, 13) + '..' : opt;
+    ctx.fillText(displayText, textX, 0);
+    ctx.restore();
+  });
+}
+function spin() {
+  if (spinning) return;
+  const options = getOptions();
+  if (options.length < 2) { showToast('⚠️ Minimal 2 pilihan!'); return; }
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('spinBtn').textContent = '🎡 Memutar...';
+  document.getElementById('resultBox').classList.remove('show');
+  const canvas = document.getElementById('wheelCanvas');
+  const totalRotation = 360 * 5 + Math.floor(Math.random() * 360);
+  currentRotation += totalRotation;
+  canvas.style.transform = `rotate(${currentRotation}deg)`;
+  setTimeout(() => {
+    const anglePerSlice = 360 / options.length;
+    const normalizedRotation = ((currentRotation % 360) + 360) % 360;
+    const sliceAtPointer = Math.floor((360 - normalizedRotation) / anglePerSlice) % options.length;
+    const winner = options[sliceAtPointer];
+    document.getElementById('resultName').textContent = winner;
+    document.getElementById('resultBox').classList.add('show');
+    playBeep();
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    spinning = false;
+    document.getElementById('spinBtn').disabled = false;
+    document.getElementById('spinBtn').textContent = '🎡 Putar Lagi!';
+  }, 5100);
+}
+function loadSample() { document.getElementById('options').value = 'Nasi Goreng\nMie Ayam\nBakso\nSate\nRendang\nGado-gado\nPizza\nBurger'; drawWheel(); showToast('📋 Contoh dimuat'); }
+function playBeep() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); [600, 800, 1000].forEach((freq, i) => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = freq; osc.type = 'sine'; const start = ctx.currentTime + i * 0.1; gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(0.2, start + 0.02); gain.gain.linearRampToValueAtTime(0, start + 0.1); osc.start(start); osc.stop(start + 0.12); }); } catch(e) {} }
+function showToast(msg) { const t = document.createElement('div'); t.textContent = msg; t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);'; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+drawWheel();
+</script>
+</body>
+</html>

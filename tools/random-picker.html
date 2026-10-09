@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Random Picker - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.section h3 button { background: transparent; border: 1px solid var(--border-light); color: var(--text-secondary); padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.section h3 button:hover { background: var(--bg-hover); color: var(--text-primary); }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field textarea, .field input { width: 100%; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; }
+.field textarea { min-height: 150px; line-height: 1.6; }
+.field textarea:focus, .field input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.spin-result { background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary)); border: 2px solid var(--accent); border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 12px; display: none; position: relative; overflow: hidden; }
+.spin-result.show { display: block; animation: popIn 0.5s; }
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+.spin-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 12px; }
+.spin-winner { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1.2; word-break: break-word; }
+.spin-badge { display: inline-block; font-size: 10px; background: var(--accent); color: var(--bg-primary); padding: 3px 10px; border-radius: 20px; font-weight: 700; margin-top: 10px; letter-spacing: 0.5px; }
+.btn-main { width: 100%; padding: 16px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-main:active { transform: translateY(0); }
+.btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.history-list { max-height: 200px; overflow-y: auto; }
+.history-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+.history-item .h-name { color: var(--text-primary); font-weight: 600; }
+.history-item .h-time { color: var(--text-muted); font-size: 10px; }
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div><h1 class="tool-title">Random Picker</h1><p class="tool-sub">Pilih pemenang acak dari list</p></div>
+  </div>
+  <div class="section">
+    <h3><span>📝 Daftar Peserta</span><button onclick="loadSample()">📋 Contoh</button></h3>
+    <div class="field">
+      <textarea id="participants" placeholder="Masukkan nama peserta, satu per baris:&#10;&#10;Andi&#10;Budi&#10;Citra&#10;Dewi"></textarea>
+      <div class="hint">Satu nama per baris. Bisa juga dipisah koma.</div>
+    </div>
+  </div>
+  <div class="spin-result" id="spinResult">
+    <div class="spin-label">🏆 Pemenangnya Adalah</div>
+    <div class="spin-winner" id="winnerName">-</div>
+    <div class="spin-badge">✨ SELAMAT ✨</div>
+  </div>
+  <button class="btn-main" id="spinBtn" onclick="spin()">🎲 Pilih Pemenang!</button>
+  <div class="action-row">
+    <button class="btn-action" onclick="clearAll()">🗑️ Clear</button>
+    <button class="btn-action" onclick="copyWinner()">📋 Copy Pemenang</button>
+  </div>
+  <div class="section" style="margin-top:12px;">
+    <h3><span>📜 Riwayat Pemenang</span><button onclick="clearHistory()">Hapus</button></h3>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+<script>
+(function() { const theme = localStorage.getItem('wenzz-theme'); if (theme) document.body.classList.add(theme); })();
+let lastWinner = '';
+function parseParticipants() {
+  const text = document.getElementById('participants').value.trim();
+  if (!text) return [];
+  return text.split(/\n|,/).map(p => p.trim()).filter(p => p.length > 0);
+}
+function spin() {
+  const list = parseParticipants();
+  if (list.length < 2) { showToast('⚠️ Minimal 2 peserta!'); return; }
+  const btn = document.getElementById('spinBtn');
+  btn.disabled = true;
+  btn.textContent = '🎲 Mengocok...';
+  const resultBox = document.getElementById('spinResult');
+  resultBox.classList.remove('show');
+  const winnerEl = document.getElementById('winnerName');
+  let count = 0;
+  const maxCount = 20;
+  const shuffleInterval = setInterval(() => {
+    const randomPick = list[Math.floor(Math.random() * list.length)];
+    winnerEl.textContent = randomPick;
+    count++;
+    if (count >= maxCount) {
+      clearInterval(shuffleInterval);
+      const finalWinner = list[Math.floor(Math.random() * list.length)];
+      winnerEl.textContent = finalWinner;
+      lastWinner = finalWinner;
+      resultBox.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = '🎲 Pilih Lagi!';
+      playBeep();
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      addHistory(finalWinner);
+    }
+  }, 100);
+}
+function addHistory(name) {
+  const history = JSON.parse(localStorage.getItem('wenzz-picker-history') || '[]');
+  const now = new Date();
+  const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  history.unshift({ name, time });
+  localStorage.setItem('wenzz-picker-history', JSON.stringify(history.slice(0, 20)));
+  renderHistory();
+}
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('wenzz-picker-history') || '[]');
+  const el = document.getElementById('historyList');
+  if (history.length === 0) { el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;padding:20px;">Belum ada riwayat</div>'; return; }
+  el.innerHTML = history.map(h => '<div class="history-item"><span class="h-name">🏆 ' + h.name + '</span><span class="h-time">' + h.time + '</span></div>').join('');
+}
+function clearHistory() { if (!confirm('Hapus semua riwayat?')) return; localStorage.removeItem('wenzz-picker-history'); renderHistory(); showToast('🗑️ Riwayat dihapus'); }
+function loadSample() {
+  document.getElementById('participants').value = 'Andi\nBudi\nCitra\nDewi\nEka\nFajar\nGita\nHadi';
+  showToast('📋 Contoh peserta dimuat');
+}
+function clearAll() { document.getElementById('participants').value = ''; document.getElementById('spinResult').classList.remove('show'); document.getElementById('spinBtn').textContent = '🎲 Pilih Pemenang!'; showToast('🗑️ Dihapus'); }
+function copyWinner() { if (!lastWinner) { showToast('⚠️ Belum ada pemenang'); return; } fallbackCopy('🏆 Pemenang: ' + lastWinner); }
+function fallbackCopy(text) { if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(() => showToast('📋 Ke-copy!')).catch(() => execCopy(text)); } else { execCopy(text); } }
+function execCopy(text) { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); showToast('📋 Ke-copy!'); } catch(e) {} document.body.removeChild(ta); }
+function playBeep() { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); [600, 800, 1000].forEach((freq, i) => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = freq; osc.type = 'sine'; const start = ctx.currentTime + i * 0.1; gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(0.2, start + 0.02); gain.gain.linearRampToValueAtTime(0, start + 0.1); osc.start(start); osc.stop(start + 0.12); }); } catch(e) {} }
+function showToast(msg) { const t = document.createElement('div'); t.textContent = msg; t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);'; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+renderHistory();
+</script>
+</body>
+</html>

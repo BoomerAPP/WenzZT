@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fake WA Chat - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.warning { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+.warning strong { color: #ef4444; }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field { margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.field input, .field select { width: 100%; padding: 10px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: var(--transition); box-sizing: border-box; }
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.chat-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.chat-msg-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 10px; display: flex; gap: 8px; align-items: flex-start; }
+.chat-msg-item .side-tag { padding: 3px 8px; border-radius: 6px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; flex-shrink: 0; margin-top: 2px; }
+.side-tag.in { background: #fff; color: #000; }
+.side-tag.out { background: #d9fdd3; color: #000; }
+.chat-msg-item textarea { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 12.5px; font-family: inherit; resize: none; outline: none; min-height: 40px; padding: 0; }
+.chat-msg-item .remove-msg { background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 0 4px; font-family: inherit; }
+
+.btn-add { width: 100%; padding: 10px; background: var(--bg-secondary); border: 1px dashed var(--border-light); border-radius: 10px; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-add:hover { background: var(--bg-hover); border-color: var(--accent); color: var(--accent); }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+
+.preview-wrap { display: none; margin-top: 16px; }
+.preview-wrap.show { display: block; }
+#chatCanvas { width: 100%; border-radius: 12px; display: block; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Fake WA Chat</h1>
+      <p class="tool-sub">Bikin screenshot chat WhatsApp</p>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ Peringatan:</strong> Tool ini buat <strong>prank / mockup design</strong>. Dilarang pakai buat nipu orang. Ada watermark WenzZTools di hasil akhir.
+  </div>
+
+  <div class="section">
+    <h3>👤 Info Kontak</h3>
+    <div class="field">
+      <label>Nama Kontak</label>
+      <input type="text" id="ctName" placeholder="Nama kontak..." maxlength="30" value="Budi Santoso">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Jam Chat</label>
+        <input type="text" id="ctTime" placeholder="09:24" maxlength="10" value="09:24">
+      </div>
+      <div class="field">
+        <label>Status Bar</label>
+        <input type="text" id="ctBattery" placeholder="87%" maxlength="10" value="87%">
+      </div>
+    </div>
+    <div class="field">
+      <label>Tanggal Header</label>
+      <input type="text" id="ctDate" placeholder="Hari Ini" maxlength="20" value="Hari Ini">
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>💬 Pesan</h3>
+    <div class="chat-list" id="chatList"></div>
+    <button class="btn-add" onclick="addMsg()">➕ Tambah Pesan</button>
+  </div>
+
+  <button class="btn-main" onclick="generateChat()">📱 Generate Screenshot</button>
+
+  <div class="preview-wrap" id="previewWrap">
+    <canvas id="chatCanvas"></canvas>
+    <div class="action-row">
+      <button class="btn-action primary" onclick="downloadChat()">⬇️ Download PNG</button>
+      <button class="btn-action" onclick="resetChat()">🔄 Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+let msgCount = 0;
+
+function addMsg(text, side) {
+  msgCount++;
+  const id = 'msg' + msgCount;
+  const div = document.createElement('div');
+  div.className = 'chat-msg-item';
+  div.id = id;
+  div.innerHTML = `
+    <span class="side-tag ${side || 'in'}">${side === 'out' ? 'KAMU' : 'DIA'}</span>
+    <textarea placeholder="Tulis pesan..." oninput="autoGrow(this)">${text || ''}</textarea>
+    <button class="remove-msg" onclick="removeMsg('${id}')">×</button>
+  `;
+  document.getElementById('chatList').appendChild(div);
+  const ta = div.querySelector('textarea');
+  ta.addEventListener('dblclick', function() {
+    const tag = div.querySelector('.side-tag');
+    tag.classList.toggle('in');
+    tag.classList.toggle('out');
+    tag.textContent = tag.classList.contains('out') ? 'KAMU' : 'DIA';
+  });
+  autoGrow(ta);
+}
+
+function removeMsg(id) {
+  document.getElementById(id).remove();
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function getMessages() {
+  const items = document.querySelectorAll('.chat-msg-item');
+  const msgs = [];
+  items.forEach(item => {
+    const tag = item.querySelector('.side-tag');
+    const text = item.querySelector('textarea').value.trim();
+    if (text) {
+      msgs.push({
+        text: text,
+        side: tag.classList.contains('out') ? 'out' : 'in'
+      });
+    }
+  });
+  return msgs;
+}
+
+function drawWrapped(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (let n = 0; n < words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + ' ';
+    } else {
+      line = test;
+    }
+  }
+  lines.push(line.trim());
+  return lines;
+}
+
+function generateChat() {
+  const name = document.getElementById('ctName').value.trim() || 'Kontak';
+  const time = document.getElementById('ctTime').value.trim() || '09:24';
+  const battery = document.getElementById('ctBattery').value.trim() || '87%';
+  const date = document.getElementById('ctDate').value.trim() || 'Hari Ini';
+
+  const msgs = getMessages();
+  if (msgs.length === 0) {
+    alert('Tambah minimal 1 pesan!');
+    return;
+  }
+
+  const canvas = document.getElementById('chatCanvas');
+  const W = 720;
+  const H = 1280;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background WA
+  ctx.fillStyle = '#0b141a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Chat area background pattern
+  ctx.fillStyle = '#0d1b22';
+  ctx.fillRect(0, 100, W, H - 220);
+
+  // Header WA
+  ctx.fillStyle = '#202c33';
+  ctx.fillRect(0, 0, W, 100);
+
+  // Status bar (jam)
+  ctx.fillStyle = '#8696a0';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(time, 20, 30);
+
+  ctx.textAlign = 'right';
+  ctx.fillText(battery + '  ▮▮▮  📶', W - 20, 30);
+
+  // Back arrow
+  ctx.fillStyle = '#aebac1';
+  ctx.font = '24px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('←', 20, 65);
+
+  // Avatar
+  ctx.beginPath();
+  ctx.arc(70, 65, 22, 0, Math.PI * 2);
+  ctx.fillStyle = '#6b7c85';
+  ctx.fill();
+
+  // Initial letter
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(name.charAt(0).toUpperCase(), 70, 68);
+
+  // Contact name
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.fillText(name, 105, 58);
+
+  ctx.fillStyle = '#8696a0';
+  ctx.font = '13px sans-serif';
+  ctx.fillText('online', 105, 80);
+
+  // Icons kanan (video call, chat, menu)
+  ctx.fillStyle = '#aebac1';
+  ctx.font = '22px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('📞  📹  ⋮', W - 25, 65);
+
+  // Date pill
+  const dateW = ctx.measureText(date).width + 40;
+  ctx.fillStyle = '#182229';
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(W / 2 - dateW / 2, 120, dateW, 28, 14);
+  } else {
+    ctx.rect(W / 2 - dateW / 2, 120, dateW, 28);
+  }
+  ctx.fill();
+
+  ctx.fillStyle = '#8696a0';
+  ctx.font = '13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(date, W / 2, 135);
+
+  // Chat messages
+  let y = 180;
+  const maxBubbleW = W - 200;
+  const padding = 14;
+
+  msgs.forEach(msg => {
+    ctx.font = '16px sans-serif';
+    const lines = drawWrapped(ctx, msg.text, maxBubbleW - padding * 2);
+    const lineH = 22;
+    const bubbleH = (lines.length * lineH) + padding * 2;
+    const textW = Math.max(...lines.map(l => ctx.measureText(l).width));
+    const bubbleW = Math.min(textW + padding * 2 + 60, maxBubbleW);
+
+    let bubbleX;
+    let isOut = msg.side === 'out';
+
+    if (isOut) {
+      bubbleX = W - bubbleW - 20;
+      ctx.fillStyle = '#005c4b';
+    } else {
+      bubbleX = 20;
+      ctx.fillStyle = '#202c33';
+    }
+
+    // Bubble
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(bubbleX, y, bubbleW, bubbleH, 10);
+    } else {
+      ctx.rect(bubbleX, y, bubbleW, bubbleH);
+    }
+    ctx.fill();
+
+    // Text
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'left';
+    ctx.font = '16px sans-serif';
+    lines.forEach((line, i) => {
+      ctx.fillText(line, bubbleX + padding, y + padding + 16 + i * lineH);
+    });
+
+    // Time + centang (warna abu-abu)
+    ctx.fillStyle = isOut ? '#a0d8cf' : '#8696a0';
+    ctx.font = '11px sans-serif';
+    const check = isOut ? '✓✓' : '';
+    ctx.textAlign = 'right';
+    ctx.fillText(time + ' ' + check, bubbleX + bubbleW - 8, y + bubbleH - 8);
+
+    y += bubbleH + 10;
+
+    if (y > H - 200) return;
+  });
+
+  // Input bar (bawah)
+  ctx.fillStyle = '#202c33';
+  ctx.fillRect(0, H - 90, W, 90);
+
+  // Input box
+  ctx.fillStyle = '#2a3942';
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(70, H - 72, W - 140, 55, 28);
+  } else {
+    ctx.rect(70, H - 72, W - 140, 55);
+  }
+  ctx.fill();
+
+  ctx.fillStyle = '#8696a0';
+  ctx.font = '15px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Ketik pesan...', 100, H - 42);
+
+  // Icons input
+  ctx.fillStyle = '#8696a0';
+  ctx.font = '22px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('😊', 45, H - 44);
+
+  // Mic button
+  ctx.fillStyle = '#00a884';
+  ctx.beginPath();
+  ctx.arc(W - 45, H - 44, 28, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = '22px sans-serif';
+  ctx.fillText('🎤', W - 45, H - 40);
+
+  // Watermark
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Dibuat dengan WenzZTools • @WenzZDev', W / 2, H - 15);
+
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadChat() {
+  const canvas = document.getElementById('chatCanvas');
+  const link = document.createElement('a');
+  link.download = 'fake-wa-chat-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Screenshot ke-download!');
+}
+
+function resetChat() {
+  document.getElementById('chatList').innerHTML = '';
+  msgCount = 0;
+  document.getElementById('previewWrap').classList.remove('show');
+  addMsg('Halo, apa kabar?', 'in');
+  addMsg('Baik dong, kamu?', 'out');
+  addMsg('Baik juga 😊', 'in');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+// Init — 3 pesan sample
+addMsg('Halo, apa kabar?', 'in');
+addMsg('Baik dong, kamu?', 'out');
+addMsg('Baik juga 😊', 'in');
+</script>
+</body>
+</html>

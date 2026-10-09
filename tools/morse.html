@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Morse Code - WenzZTools</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tool-page { max-width: 520px; margin: 0 auto; padding: 20px 16px 120px; }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.back-btn { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: var(--transition); flex-shrink: 0; }
+.back-btn:hover { background: var(--bg-hover); }
+.back-btn svg { width: 20px; height: 20px; }
+.tool-title { font-size: 20px; font-weight: 700; }
+.tool-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.tab-bar { display: flex; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+.tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.tab-btn.active { background: var(--accent); color: var(--bg-primary); }
+
+.section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.section h3 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.section h3 button { background: transparent; border: 1px solid var(--border-light); color: var(--text-secondary); padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.section h3 button:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.field textarea { width: 100%; min-height: 100px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 14px; font-family: 'Courier New', monospace; outline: none; transition: var(--transition); box-sizing: border-box; resize: vertical; }
+.field textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+.morse-output { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 14px; min-height: 100px; font-family: 'Courier New', monospace; font-size: 15px; color: var(--accent); word-break: break-all; line-height: 1.6; user-select: text; }
+.morse-output:empty::before { content: 'Hasil akan muncul di sini...'; color: var(--text-muted); font-style: italic; }
+
+.btn-main { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 6px; font-family: inherit; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn-action { padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+.btn-action:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-action.primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.stat-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
+.stat-num { font-size: 16px; font-weight: 700; color: var(--accent); display: block; }
+.stat-lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.beep-indicator { display: flex; gap: 4px; margin-top: 10px; justify-content: center; min-height: 10px; }
+.beep-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-light); transition: all 0.1s; }
+.beep-dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="tool-page">
+
+  <div class="tool-header">
+    <a href="../tools.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="tool-title">Morse Code</h1>
+      <p class="tool-sub">Konversi teks ↔ morse + beep sound</p>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabText" onclick="switchMode('text')">🔤 Teks → Morse</button>
+    <button class="tab-btn" id="tabMorse" onclick="switchMode('morse')">📻 Morse → Teks</button>
+  </div>
+
+  <div class="section">
+    <h3><span id="inputLabel">📝 Input Teks</span><button onclick="pasteInput()">📋 Paste</button></h3>
+    <div class="field">
+      <textarea id="inputArea" placeholder="Ketik teks di sini..." oninput="autoConvert()"></textarea>
+    </div>
+    <div class="stats">
+      <div class="stat-item"><span class="stat-num" id="charCount">0</span><span class="stat-lbl">Karakter</span></div>
+      <div class="stat-item"><span class="stat-num" id="wordCount">0</span><span class="stat-lbl">Kata</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3><span>📻 Hasil</span><button onclick="copyResult()">📋 Copy</button></h3>
+    <div class="morse-output" id="outputArea"></div>
+    <div class="beep-indicator" id="beepIndicator"></div>
+  </div>
+
+  <button class="btn-main" onclick="autoConvert()">🔄 Konversi</button>
+  <div class="action-row">
+    <button class="btn-action primary" onclick="playMorse()">🔊 Play Beep</button>
+    <button class="btn-action" onclick="clearAll()">🗑️ Clear</button>
+  </div>
+
+</div>
+
+<div class="wenzz-credit">© 2025 WenzZTools • by <span>@WenzZDev</span></div>
+
+<script>
+(function() {
+  const theme = localStorage.getItem('wenzz-theme');
+  if (theme) document.body.classList.add(theme);
+})();
+
+const morseMap = {
+  'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+  'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+  'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+  'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+  'Y': '-.--', 'Z': '--..',
+  '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+  '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+  '.': '.-.-.-', ',': '--..--', '?': '..--..', '!': '-.-.--', "'": '.----.',
+  '"': '.-..-.', '/': '-..-.', '(': '-.--.', ')': '-.--.-', '&': '.-...',
+  ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.', '-': '-....-',
+  '_': '..--.-', '$': '...-..-', '@': '.--.-.', ' ': '/'
+};
+
+const reverseMap = {};
+for (const key in morseMap) {
+  reverseMap[morseMap[key]] = key;
+}
+
+let mode = 'text';
+
+function switchMode(m) {
+  mode = m;
+  document.getElementById('tabText').classList.toggle('active', m === 'text');
+  document.getElementById('tabMorse').classList.toggle('active', m === 'morse');
+
+  document.getElementById('inputLabel').textContent = m === 'text' ? '📝 Input Teks' : '📻 Input Morse';
+  document.getElementById('inputArea').placeholder = m === 'text'
+    ? 'Ketik teks di sini...'
+    : 'Ketik morse di sini... (pisah huruf pakai spasi, pisah kata pakai /)';
+
+  document.getElementById('inputArea').value = '';
+  document.getElementById('outputArea').textContent = '';
+  updateStats();
+}
+
+function textToMorse(text) {
+  return text.toUpperCase().split('').map(c => morseMap[c] || c).join(' ');
+}
+
+function morseToText(morse) {
+  return morse.trim().split(' ').map(code => {
+    if (code === '/') return ' ';
+    return reverseMap[code] || '';
+  }).join('').replace(/\s+/g, ' ').trim();
+}
+
+function autoConvert() {
+  const input = document.getElementById('inputArea').value;
+  const output = document.getElementById('outputArea');
+
+  updateStats();
+
+  if (!input.trim()) {
+    output.textContent = '';
+    return;
+  }
+
+  if (mode === 'text') {
+    output.textContent = textToMorse(input);
+  } else {
+    output.textContent = morseToText(input);
+  }
+}
+
+function updateStats() {
+  const input = document.getElementById('inputArea').value;
+  document.getElementById('charCount').textContent = input.length;
+  document.getElementById('wordCount').textContent = input.trim() ? input.trim().split(/\s+/).length : 0;
+}
+
+function copyResult() {
+  const text = document.getElementById('outputArea').textContent;
+  if (!text) { showToast('⚠️ Belum ada hasil'); return; }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Hasil ke-copy!')).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('📋 Hasil ke-copy!');
+  } catch(e) {
+    showToast('❌ Gagal copy');
+  }
+  document.body.removeChild(ta);
+}
+
+function pasteInput() {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.readText().then(text => {
+      document.getElementById('inputArea').value = text;
+      autoConvert();
+      showToast('📋 Berhasil paste');
+    }).catch(() => showToast('❌ Gagal paste'));
+  } else {
+    showToast('⚠️ Paste manual aja ya');
+  }
+}
+
+function clearAll() {
+  document.getElementById('inputArea').value = '';
+  document.getElementById('outputArea').textContent = '';
+  updateStats();
+}
+
+// ============================
+// BEEP SOUND (Web Audio API)
+// ============================
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      return null;
+    }
+  }
+  return audioCtx;
+}
+
+function beep(duration, freq) {
+  const ctx = initAudio();
+  if (!ctx) return;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.frequency.value = freq || 700;
+  osc.type = 'sine';
+
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.01);
+  gain.gain.setValueAtTime(0.15, ctx.currentTime + duration / 1000 - 0.01);
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration / 1000);
+
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + duration / 1000);
+}
+
+async function playMorse() {
+  let morseText = '';
+
+  if (mode === 'text') {
+    const input = document.getElementById('inputArea').value;
+    if (!input.trim()) { showToast('⚠️ Input masih kosong'); return; }
+    morseText = textToMorse(input);
+  } else {
+    morseText = document.getElementById('inputArea').value;
+    if (!morseText.trim()) { showToast('⚠️ Input masih kosong'); return; }
+  }
+
+  showToast('🔊 Memutar morse...');
+
+  // Indicator dots
+  const indicator = document.getElementById('beepIndicator');
+  indicator.innerHTML = '';
+  const totalDots = Math.min(morseText.length, 60);
+  for (let i = 0; i < totalDots; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'beep-dot';
+    indicator.appendChild(dot);
+  }
+
+  // Play sequence
+  let delay = 0;
+  const dotDuration = 120;
+  const dashDuration = 360;
+  const gapDuration = 120;
+  const letterGap = 360;
+
+  let dotIndex = 0;
+
+  for (let i = 0; i < morseText.length; i++) {
+    const char = morseText[i];
+
+    if (char === '.') {
+      setTimeout(() => {
+        beep(dotDuration);
+        if (indicator.children[dotIndex]) indicator.children[dotIndex].classList.add('on');
+        setTimeout(() => {
+          if (indicator.children[dotIndex]) indicator.children[dotIndex].classList.remove('on');
+          dotIndex++;
+        }, dotDuration);
+      }, delay);
+      delay += dotDuration + gapDuration;
+
+    } else if (char === '-') {
+      setTimeout(() => {
+        beep(dashDuration);
+        if (indicator.children[dotIndex]) indicator.children[dotIndex].classList.add('on');
+        setTimeout(() => {
+          if (indicator.children[dotIndex]) indicator.children[dotIndex].classList.remove('on');
+          dotIndex++;
+        }, dashDuration);
+      }, delay);
+      delay += dashDuration + gapDuration;
+
+    } else if (char === ' ') {
+      delay += letterGap;
+
+    } else if (char === '/') {
+      delay += letterGap * 2;
+    }
+  }
+
+  setTimeout(() => showToast('✅ Selesai'), delay);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--bg-card);color:var(--text-primary);padding:12px 20px;border-radius:12px;font-size:13px;border:1px solid var(--border-light);z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>
