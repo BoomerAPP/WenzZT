@@ -142,7 +142,7 @@
 // ⚙️ GANTI 1 BARIS DI BAWAH
 // Encode API key di base64encode.org, paste hasilnya
 // ==========================================
-const ENCODED_KEY = 'c2stb3ItdjEtOWIzZDMzYjkxN2Y1YWQxMGIyZjYxM2Q3ZDQxYjc5MjE1ZTU1NDA0M2RkZmY2YzFkY2UxYWU0MzkxYjgzMTI0Yg==';
+const ENCODED_KEY = 'c2stb3ItdjEtNDQxZDA5NjdjMDA1ZmRkNTU0NGUyZjY3MTc3MzQyZjYwZjc2OTQwMjgwNjBmNDEyMjUxYjUxYTJkYjkzMWYwNA';
 // ==========================================
 
 const MODEL = 'openrouter/free';
@@ -177,6 +177,175 @@ function saveChat() {
 
 function renderMessage(role, text, animate) {
   if (animate === undefined) animate = true;
+  const container = document.getElementById('chatContainer');
+  const welcome = document.getElementById('chatWelcome');
+  if (welcome) welcome.style.display = 'none';
+
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'ai');
+
+  const avatar = role === 'user'
+    ? '<div class="msg-avatar">👤</div>'
+    : '<div class="msg-avatar">🤖</div>';
+
+  const actions = role === 'ai'
+    ? '<div class="msg-actions"><button class="msg-action-btn" onclick="copyMsg(this)">📋 Copy</button></div>'
+    : '';
+
+  div.innerHTML = avatar + '<div class="msg-content"><div class="msg-bubble">' + escapeHtml(text) + '</div>' + actions + '</div>';
+  container.appendChild(div);
+  if (animate) scrollToBottom();
+  return div;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function scrollToBottom() {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+async function sendMessage() {
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+
+  const key = getKey();
+  if (!key || key.length < 20) {
+    alert('⚠️ API key belum valid. Cek di kode ai.html.');
+    return;
+  }
+
+  isTyping = true;
+  input.value = '';
+  autoResize(input);
+  document.getElementById('sendBtn').disabled = true;
+
+  messages.push({ role: 'user', text: text });
+  renderMessage('user', text);
+  saveChat();
+
+  const aiDiv = renderMessage('ai', '');
+  const bubble = aiDiv.querySelector('.msg-bubble');
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key,
+        'HTTP-Referer': 'https://my-wenzztools.vercel.app',
+        'X-Title': 'WenzZTools'
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: 'Kamu adalah WenzZ AI, asisten cerdas dari WenzZTools. Jawab ramah, ringkas, membantu. Bahasa Indonesia santai tapi sopan.' },
+          ...messages.map(m => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.text
+          }))
+        ],
+        temperature: 0.9,
+        max_tokens: 1000
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(function() { return {}; });
+      const errMsg = (errData.error && errData.error.message) || ('API error ' + response.status);
+      throw new Error(errMsg);
+    }
+
+    const data = await response.json();
+    const aiText = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Maaf, aku nggak bisa jawab itu.';
+
+    bubble.innerHTML = '';
+    typeText(bubble, aiText, function() {
+      messages.push({ role: 'ai', text: aiText });
+      saveChat();
+      isTyping = false;
+      document.getElementById('sendBtn').disabled = false;
+    });
+
+  } catch (err) {
+    bubble.innerHTML = '❌ Error: ' + err.message;
+    isTyping = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
+}
+
+function typeText(element, text, callback) {
+  let i = 0;
+  function type() {
+    if (i < text.length) {
+      element.textContent = text.slice(0, i + 1);
+      i++;
+      scrollToBottom();
+      setTimeout(type, 10);
+    } else {
+      if (callback) callback();
+    }
+  }
+  type();
+}
+
+function sendSuggestion(text) {
+  document.getElementById('aiInput').value = text;
+  sendMessage();
+}
+
+function handleInputKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function copyMsg(btn) {
+  const bubble = btn.closest('.msg').querySelector('.msg-bubble');
+  const text = bubble.textContent;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = '✅ Copied!';
+      setTimeout(function() { btn.textContent = '📋 Copy'; }, 1500);
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      btn.textContent = '✅ Copied!';
+      setTimeout(function() { btn.textContent = '📋 Copy'; }, 1500);
+    } catch(e) {}
+    document.body.removeChild(ta);
+  }
+}
+
+function clearChat() {
+  if (!confirm('Hapus semua riwayat chat?')) return;
+  messages = [];
+  localStorage.removeItem('wenzz-ai-chat');
+  location.reload();
+}
+
+loadChat();
+</script>
+</body>
+</html> undefined) animate = true;
   const container = document.getElementById('chatContainer');
   const welcome = document.getElementById('chatWelcome');
   if (welcome) welcome.style.display = 'none';
