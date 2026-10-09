@@ -179,11 +179,6 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text || isTyping) return;
 
-  if (!OPENROUTER_KEY || OPENROUTER_KEY === 'PASTE_KEY_OPENROUTER_DISINI') {
-  showToast('⚠️ OpenRouter key belum di-set!');
-  return;
-}
-
   isTyping = true;
   input.value = '';
   autoResize(input);
